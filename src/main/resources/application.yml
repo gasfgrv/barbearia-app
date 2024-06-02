@@ -12,10 +12,10 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   mail:
-    host: sandbox.smtp.mailtrap.io
+    host: ${EMAIL_HOST}
     port: 2525
-    username: ${MAILTRAP_USER}
-    password: ${MAILTRAP_PASSWORD}
+    username: ${EMAIL_USER}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         transport:
@@ -35,4 +35,9 @@ springdoc:
 api:
   security:
     token:
-      secret: teste
+      secret: ${JWT_SECRET}
+
+aws:
+  region: ${AWS_REGION}
+  secret-access-key: ${AWS_SECRET}
+  access-key-id: ${AWS_KEY}
