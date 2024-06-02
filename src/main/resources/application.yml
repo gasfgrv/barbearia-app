@@ -39,5 +39,3 @@ api:
 
 aws:
   region: ${AWS_REGION}
-  secret-access-key: ${AWS_SECRET}
-  access-key-id: ${AWS_KEY}
