@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +25,10 @@ public class AutenticacaoController {
 
     @PostMapping
     public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
-        var authentication = authenticationManager.authenticate(authenticationToken);
-        var tokenJwt = tokenService.gerarToken((UsuarioSchema) authentication.getPrincipal());
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(dados.getLogin(), dados.getSenha());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        String tokenJwt = tokenService.gerarToken((UsuarioSchema) authentication.getPrincipal());
         return ResponseEntity.ok(new DadosTokenJWT(tokenJwt));
     }
 

@@ -1,4 +1,16 @@
 package com.gasfgrv.barbearia.adapter.controller.login;
 
-public record DadosAutenticacao(String login, String senha) {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class DadosAutenticacao {
+
+    @Email
+    private String login;
+
+    @NotBlank
+    private String senha;
+
 }

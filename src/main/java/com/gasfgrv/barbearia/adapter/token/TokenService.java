@@ -22,7 +22,7 @@ public class TokenService {
     private final SecretPort secretPort;
 
     public String gerarToken(UsuarioSchema principal) {
-        var algoritmo = Algorithm.HMAC256(obterValorDoSecret());
+        Algorithm algoritmo = Algorithm.HMAC256(obterValorDoSecret());
         return JWT.create()
                 .withIssuer("Login")
                 .withSubject(principal.getUsername())
@@ -31,7 +31,7 @@ public class TokenService {
     }
 
     public String getSubject(String token) {
-        var algoritmo = Algorithm.HMAC256(obterValorDoSecret());
+        Algorithm algoritmo = Algorithm.HMAC256(obterValorDoSecret());
         return JWT.require(algoritmo)
                 .withIssuer("Login")
                 .build()

@@ -31,7 +31,7 @@ public class SwaggerConfig {
     public GroupedOpenApi logApi() {
         return GroupedOpenApi.builder()
                 .group("api-controllers")
-                .packagesToScan("com.gasfgrv.barbearia.adapter.in")
+                .packagesToScan("com.gasfgrv.barbearia.adapter.controller")
                 .pathsToMatch("/**")
                 .build();
     }
