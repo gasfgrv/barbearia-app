@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UsuarioRepositoryImpl implements UsuarioRepository {
+public class UsuarioAdapter implements UsuarioRepository {
 
     private final UsuarioJpaRepository repository;
     private final Mapper<UserDetails, Usuario> mapper;

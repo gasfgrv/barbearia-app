@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class PerfilRepositoryImpl implements PerfilRepository {
+public class PerfilAdapter implements PerfilRepository {
 
     private final PerfilJpaRepository repository;
     private final Mapper<GrantedAuthority, Perfil> mapper;
