@@ -1,15 +1,19 @@
 services:
   postgres:
     image: postgres:14-alpine
-    container_name: postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mydb
+    container_name: barbearia_bd
+    restart: unless-stopped
+    networks:
+      - barbearia
     ports:
-      - "5432:5432"
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: barbearia
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
 
-volumes:
-  postgres_data:
+networks:
+  barbearia:
+    driver: bridge
