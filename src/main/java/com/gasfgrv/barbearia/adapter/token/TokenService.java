@@ -3,6 +3,8 @@ package com.gasfgrv.barbearia.adapter.token;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
+import com.gasfgrv.barbearia.domain.entity.Usuario;
+import com.gasfgrv.barbearia.port.database.reset.PasswordResetTokenRepositoryPort;
 import com.gasfgrv.barbearia.port.secret.SecretPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,11 +22,12 @@ public class TokenService {
     private String secret;
 
     private final SecretPort secretPort;
+    private final PasswordResetTokenRepositoryPort passwordResetTokenRepository;
 
     public String gerarToken(UsuarioSchema principal) {
         Algorithm algoritmo = Algorithm.HMAC256(obterValorDoSecret());
         return JWT.create()
-                .withIssuer("Login")
+                .withIssuer("barbearia")
                 .withSubject(principal.getUsername())
                 .withExpiresAt(dataExpiracao())
                 .sign(algoritmo);
@@ -33,10 +36,23 @@ public class TokenService {
     public String getSubject(String token) {
         Algorithm algoritmo = Algorithm.HMAC256(obterValorDoSecret());
         return JWT.require(algoritmo)
-                .withIssuer("Login")
+                .withIssuer("barbearia")
                 .build()
                 .verify(token)
                 .getSubject();
+    }
+
+    public void criarResetToken(Usuario usuario, String token) {
+        passwordResetTokenRepository.salvarResetToken(usuario, token);
+    }
+
+    public void validarResetToken(String token) {
+        boolean tokenNaoExiste = !passwordResetTokenRepository.existeTokenParaAtualizarSenha(token);
+        boolean isExpirado = !passwordResetTokenRepository.obterExpiracaoToken(token).isBefore(LocalDateTime.now());
+
+        if (tokenNaoExiste && isExpirado) {
+            throw new RuntimeException("Não é possível alterar a senha");
+        }
     }
 
     private Instant dataExpiracao() {
@@ -46,4 +62,5 @@ public class TokenService {
     private String obterValorDoSecret() {
         return secretPort.obterSecret(secret);
     }
+
 }
