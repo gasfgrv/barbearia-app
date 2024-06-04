@@ -9,22 +9,6 @@ spring:
     password: postgres
     username: postgres
     driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-  mail:
-    host: ${EMAIL_HOST}
-    port: 2525
-    username: ${EMAIL_USER}
-    password: ${EMAIL_PASSWORD}
-    properties:
-      mail:
-        transport:
-          protocol: smtp
-        debug: true
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
 springdoc:
   api-docs:
@@ -39,3 +23,6 @@ api:
 
 aws:
   region: ${AWS_REGION}
+
+email:
+  secret: ${EMAIL_SECRET}
