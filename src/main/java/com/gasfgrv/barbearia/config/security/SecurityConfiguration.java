@@ -31,6 +31,8 @@ public class SecurityConfiguration {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorization ->
                         authorization.requestMatchers(HttpMethod.POST, "/v1/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/v1/login/reset").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/swagger/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll()
                                 .anyRequest().authenticated())
