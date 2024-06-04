@@ -1,0 +1,1 @@
+ALTER TABLE public.password_reset_token ADD CONSTRAINT token_usuario_fk FOREIGN KEY (usuario_login) REFERENCES public.usuario(login);
