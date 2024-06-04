@@ -2,6 +2,7 @@ package com.gasfgrv.barbearia.adapter.controller.login;
 
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
 import com.gasfgrv.barbearia.adapter.token.TokenService;
+import com.gasfgrv.barbearia.application.service.usuario.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +10,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
+
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -22,6 +29,7 @@ public class AutenticacaoController {
 
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final UsuarioService usuarioService;
 
     @PostMapping
     public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados) {
@@ -30,6 +38,23 @@ public class AutenticacaoController {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         String tokenJwt = tokenService.gerarToken((UsuarioSchema) authentication.getPrincipal());
         return ResponseEntity.ok(new DadosTokenJWT(tokenJwt));
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacao dados, WebRequest request) {
+        String url = ((ServletWebRequest) request).getRequest().getRequestURL().toString();
+        String token = tokenService.gerarToken((UsuarioSchema) usuarioService.loadUserByUsername(dados.getLogin()));
+        usuarioService.resetarSenhaUsuario(dados.getLogin(), url, token);
+        return ResponseEntity.ok(new DadosTokenJWT(token));
+    }
+
+    @Transactional
+    @PutMapping("/reset/nova")
+    public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenha form, WebRequest request) {
+        String token = Objects.requireNonNull(request.getHeader("Authorization")).split(" ")[1].trim();
+        tokenService.validarResetToken(token);
+        usuarioService.trocarSenha(tokenService.getSubject(token), form.getSenha());
+        return ResponseEntity.noContent().build();
     }
 
 }
