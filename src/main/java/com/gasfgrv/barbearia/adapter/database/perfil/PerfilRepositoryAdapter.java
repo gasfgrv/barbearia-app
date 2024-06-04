@@ -1,7 +1,7 @@
 package com.gasfgrv.barbearia.adapter.database.perfil;
 
 import com.gasfgrv.barbearia.domain.entity.Perfil;
-import com.gasfgrv.barbearia.port.database.perfil.PerfilRepository;
+import com.gasfgrv.barbearia.port.database.perfil.PerfilRepositoryPort;
 import com.gasfgrv.barbearia.port.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class PerfilAdapter implements PerfilRepository {
+public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
 
     private final PerfilJpaRepository repository;
     private final Mapper<GrantedAuthority, Perfil> mapper;
