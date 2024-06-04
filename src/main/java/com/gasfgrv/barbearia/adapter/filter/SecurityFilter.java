@@ -2,7 +2,7 @@ package com.gasfgrv.barbearia.adapter.filter;
 
 import com.gasfgrv.barbearia.adapter.token.TokenService;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
-import com.gasfgrv.barbearia.port.database.usuario.UsuarioRepository;
+import com.gasfgrv.barbearia.port.database.usuario.UsuarioRepositoryPort;
 import com.gasfgrv.barbearia.port.mapper.Mapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +23,7 @@ import java.io.IOException;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final UsuarioRepository repository;
+    private final UsuarioRepositoryPort repository;
     private final Mapper<Usuario, UserDetails> mapper;
 
     @Override
