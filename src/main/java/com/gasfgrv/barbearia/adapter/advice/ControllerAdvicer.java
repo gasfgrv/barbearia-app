@@ -1,6 +1,9 @@
 package com.gasfgrv.barbearia.adapter.advice;
 
-import com.gasfgrv.barbearia.adapter.secret.ChaveSecretNaoEncontradaExeption;
+import com.gasfgrv.barbearia.adapter.exception.secret.ChaveSecretNaoEncontradaExeption;
+import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
+import com.gasfgrv.barbearia.application.exception.email.EnvioEmailException;
+import com.gasfgrv.barbearia.application.exception.usuario.UsuarioNaoEncontradoException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -55,6 +58,60 @@ class ControllerAdvicer extends ResponseEntityExceptionHandler {
         Problem problem = Problem.create()
                 .withTitle("Erro ao consultar chave")
                 .withDetail(exception.getMessage())
+                .withStatus(status)
+                .withInstance(URI.create(obterUri(request)));
+
+        return handleExceptionInternal(exception, problem, headers, status, request);
+    }
+
+    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    @ApiResponse(responseCode = "404", content = {
+            @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
+    })
+    public ResponseEntity<Object> handleUsuarioNaoEncontradoException(UsuarioNaoEncontradoException exception, WebRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        HttpHeaders headers = new HttpHeaders();
+        headers.put(HttpHeaders.CONTENT_TYPE, java.util.List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+
+        Problem problem = Problem.create()
+                .withTitle("Erro ao consultar chave")
+                .withDetail(exception.getMessage())
+                .withStatus(status)
+                .withInstance(URI.create(obterUri(request)));
+
+        return handleExceptionInternal(exception, problem, headers, status, request);
+    }
+
+    @ExceptionHandler(ResetTokenInvalidoException.class)
+    @ApiResponse(responseCode = "403", content = {
+            @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
+    })
+    public ResponseEntity<Object> handleResetTokenInvalidoException(ResetTokenInvalidoException exception, WebRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        HttpHeaders headers = new HttpHeaders();
+        headers.put(HttpHeaders.CONTENT_TYPE, java.util.List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+
+        Problem problem = Problem.create()
+                .withTitle("Erro ao alterar a senha")
+                .withDetail(exception.getMessage())
+                .withStatus(status)
+                .withInstance(URI.create(obterUri(request)));
+
+        return handleExceptionInternal(exception, problem, headers, status, request);
+    }
+
+    @ExceptionHandler(EnvioEmailException.class)
+    @ApiResponse(responseCode = "404", content = {
+            @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
+    })
+    public ResponseEntity<Object> handleEnvioEmailException(EnvioEmailException exception, WebRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        HttpHeaders headers = new HttpHeaders();
+        headers.put(HttpHeaders.CONTENT_TYPE, java.util.List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+
+        Problem problem = Problem.create()
+                .withTitle("Erro ao enviar e-mail")
+                .withDetail(exception.getCause().getMessage())
                 .withStatus(status)
                 .withInstance(URI.create(obterUri(request)));
 

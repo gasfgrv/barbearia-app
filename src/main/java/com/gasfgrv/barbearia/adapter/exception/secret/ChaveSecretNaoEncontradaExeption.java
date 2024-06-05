@@ -1,4 +1,4 @@
-package com.gasfgrv.barbearia.adapter.secret;
+package com.gasfgrv.barbearia.adapter.exception.secret;
 
 public class ChaveSecretNaoEncontradaExeption extends RuntimeException {
 

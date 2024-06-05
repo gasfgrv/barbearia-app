@@ -1,5 +1,6 @@
 package com.gasfgrv.barbearia.application.service.email;
 
+import com.gasfgrv.barbearia.application.exception.email.EnvioEmailException;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -28,7 +29,7 @@ public class EmailService {
             mimeMessage.setContent(htmlContent, "text/html; charset=utf-8");
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new EnvioEmailException(e);
         }
     }
 

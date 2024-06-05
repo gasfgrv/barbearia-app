@@ -1,6 +1,7 @@
 package com.gasfgrv.barbearia.application.service.usuario;
 
 import com.gasfgrv.barbearia.adapter.token.TokenService;
+import com.gasfgrv.barbearia.application.exception.usuario.UsuarioNaoEncontradoException;
 import com.gasfgrv.barbearia.application.service.email.EmailService;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
 import com.gasfgrv.barbearia.port.database.reset.PasswordResetTokenRepositoryPort;
@@ -45,6 +46,6 @@ public class UsuarioService implements UserDetailsService {
 
     private Usuario getUsuario(String login) {
         return Optional.ofNullable(usuarioRepository.findByLogin(login))
-                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+                .orElseThrow(UsuarioNaoEncontradoException::new);
     }
 }

@@ -3,6 +3,7 @@ package com.gasfgrv.barbearia.adapter.token;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
+import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
 import com.gasfgrv.barbearia.port.database.reset.PasswordResetTokenRepositoryPort;
 import com.gasfgrv.barbearia.port.secret.SecretPort;
@@ -51,7 +52,7 @@ public class TokenService {
         boolean isExpirado = !passwordResetTokenRepository.obterExpiracaoToken(token).isBefore(LocalDateTime.now());
 
         if (tokenNaoExiste && isExpirado) {
-            throw new RuntimeException("Não é possível alterar a senha");
+            throw new ResetTokenInvalidoException();
         }
     }
 
