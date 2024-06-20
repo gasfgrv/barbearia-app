@@ -44,7 +44,7 @@ public class AutenticacaoController {
     public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacao dados, WebRequest request) {
         String url = ((ServletWebRequest) request).getRequest().getRequestURL().toString();
         String token = tokenService.gerarToken((UsuarioSchema) usuarioService.loadUserByUsername(dados.getLogin()));
-        usuarioService.resetarSenhaUsuario(dados.getLogin(), url, token);
+        usuarioService.gerarTokenParaResetarSenhaUsuario(dados.getLogin(), url, token);
         return ResponseEntity.ok(new DadosTokenJWT(token));
     }
 

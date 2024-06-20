@@ -1,7 +1,7 @@
 package com.gasfgrv.barbearia.adapter.mapper;
 
 import com.gasfgrv.barbearia.domain.entity.Usuario;
-import com.gasfgrv.barbearia.port.mapper.Mapper;
+import com.gasfgrv.barbearia.domain.port.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;

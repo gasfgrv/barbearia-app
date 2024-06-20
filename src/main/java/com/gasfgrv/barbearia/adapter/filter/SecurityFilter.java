@@ -2,8 +2,8 @@ package com.gasfgrv.barbearia.adapter.filter;
 
 import com.gasfgrv.barbearia.adapter.token.TokenService;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
-import com.gasfgrv.barbearia.port.database.usuario.UsuarioRepositoryPort;
-import com.gasfgrv.barbearia.port.mapper.Mapper;
+import com.gasfgrv.barbearia.domain.port.database.usuario.UsuarioRepositoryPort;
+import com.gasfgrv.barbearia.domain.port.mapper.Mapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

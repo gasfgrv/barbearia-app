@@ -8,10 +8,12 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serializable;
+
 @Data
 @Entity
 @Table(name = "perfil")
-public class PerfilSchema implements GrantedAuthority {
+public class PerfilSchema implements GrantedAuthority, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

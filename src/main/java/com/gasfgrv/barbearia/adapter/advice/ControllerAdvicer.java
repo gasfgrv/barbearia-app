@@ -2,7 +2,7 @@ package com.gasfgrv.barbearia.adapter.advice;
 
 import com.gasfgrv.barbearia.adapter.exception.secret.ChaveSecretNaoEncontradaExeption;
 import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
-import com.gasfgrv.barbearia.application.exception.email.EnvioEmailException;
+import com.gasfgrv.barbearia.adapter.exception.email.EnvioEmailException;
 import com.gasfgrv.barbearia.application.exception.usuario.UsuarioNaoEncontradoException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -10,13 +10,14 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "usuario")
-public class UsuarioSchema implements UserDetails {
+public class UsuarioSchema implements UserDetails, Serializable {
 
     @Id
     private String login;
