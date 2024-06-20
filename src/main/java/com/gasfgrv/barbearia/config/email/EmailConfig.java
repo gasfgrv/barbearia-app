@@ -1,6 +1,6 @@
 package com.gasfgrv.barbearia.config.email;
 
-import com.gasfgrv.barbearia.port.secret.SecretPort;
+import com.gasfgrv.barbearia.domain.port.secret.SecretPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
