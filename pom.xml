@@ -24,8 +24,8 @@
         <jwt.version>4.4.0</jwt.version>
         <aws.version>2.25.64</aws.version>
         <sonar.version>4.0.0.4121</sonar.version>
-        <jacoco.version>0.8.8</jacoco.version>
-        <surefire.version>2.22.0</surefire.version>
+        <jacoco.version>0.8.12</jacoco.version>
+        <surefire.version>3.3.0</surefire.version>
         <sonar.projectKey>barbearia-app</sonar.projectKey>
         <sonar.projectName>barbearia</sonar.projectName>
         <sonar.projectVersion>1.0</sonar.projectVersion>
