@@ -17,7 +17,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Async
+    @Async("emailExecutor")
     public void enviarResetToken(Usuario usuario, String url) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
