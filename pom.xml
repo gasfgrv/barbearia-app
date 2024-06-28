@@ -32,12 +32,10 @@
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test/java</sonar.tests>
-        <sonar.login></sonar.login>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.binaries>target/classes</sonar.java.binaries>
         <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
-        <sonar.jacoco.reportPaths>target/site/jacoco/jacoco.xml</sonar.jacoco.reportPaths>
-        <!--<sonar.exclusions></sonar.exclusions>-->
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>
             src/main/java/com/gasfgrv/barbearia/domain/*,
             src/main/java/com/gasfgrv/barbearia/application/exception/**/*,
@@ -141,6 +139,11 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>localstack</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
