@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(properties = {"aws.region=us-east-1"})
+@TestPropertySource(properties = {"aws.region=us-east-1", "aws.endpoint.s3=s3", "aws.endpoint.secretsManager=secrets"})
 @SpringBootTest(classes = AwsConfig.class)
 class AwsConfigTest {
 
