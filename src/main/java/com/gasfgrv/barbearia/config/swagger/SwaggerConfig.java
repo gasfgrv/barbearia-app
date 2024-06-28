@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public GroupedOpenApi logApi() {
+    public GroupedOpenApi groupedOpenApi() {
         return GroupedOpenApi.builder()
                 .group("api-controllers")
                 .packagesToScan("com.gasfgrv.barbearia.adapter.controller")
