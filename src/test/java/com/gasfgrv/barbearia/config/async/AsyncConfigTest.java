@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AsyncConfigTest {
 
     @Autowired
-    private ApplicationContext applicationContext;
+    ApplicationContext applicationContext;
 
     @Test
     @DisplayName("Deve criar um bean de ThreadPoolTaskExecutor")
