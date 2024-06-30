@@ -1,6 +1,6 @@
 package com.gasfgrv.barbearia.config.email;
 
-import com.gasfgrv.barbearia.config.AbstractContainerIntegrationTest;
+import com.gasfgrv.barbearia.config.AbstractContainerIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
-class EmailConfigTest extends AbstractContainerIntegrationTest {
+class EmailConfigTest extends AbstractContainerIntegrationTestConfig {
 
     @Autowired
     ApplicationContext applicationContext;
