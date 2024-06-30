@@ -51,7 +51,7 @@ public class AutenticacaoController {
     @Transactional
     @PutMapping("/reset/nova")
     public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenha form, WebRequest request) {
-        String token = Objects.requireNonNull(request.getHeader("Authorization")).split(" ")[1].trim();
+        String token = Objects.requireNonNull(request.getHeader("Authorization")).split("\\s")[1].trim();
         tokenService.validarResetToken(token);
         usuarioService.trocarSenha(tokenService.getSubject(token), form.getSenha());
         return ResponseEntity.noContent().build();
