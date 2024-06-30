@@ -15,6 +15,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
 
+import java.util.Set;
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SECRETSMANAGER;
@@ -63,13 +65,27 @@ public class AbstractContainerIntegrationTestConfig {
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build()) {
 
-            CreateSecretRequest createSecretRequest = CreateSecretRequest.builder()
-                    .name("emailSecretTest")
-                    .secretString("{\"auth\":\"true\",\"host\":\"sandbox.smtp\",\"password\":\"1234567890\",\"port\":\"2525\",\"starttls\":\"true\",\"username\":\"testUser\"}")
-                    .build();
-
-            secretsManagerClient.createSecret(createSecretRequest);
+            createSecretsRequests().forEach(secretsManagerClient::createSecret);
         }
+    }
+
+    private static Set<CreateSecretRequest> createSecretsRequests() {
+        CreateSecretRequest createJwtSecretRequest = CreateSecretRequest.builder()
+                .name("jwtSecretTest")
+                .secretString("15678")
+                .build();
+
+        CreateSecretRequest createDbSecretRequest = CreateSecretRequest.builder()
+                .name("databaseSecretTest")
+                .secretString("{\"password\":\"postgres\",\"username\":\"postgres\"}")
+                .build();
+
+        CreateSecretRequest createEmailSecretRequest = CreateSecretRequest.builder()
+                .name("emailSecretTest")
+                .secretString("{\"auth\":\"true\",\"host\":\"sandbox.smtp\",\"password\":\"1234567890\",\"port\":\"2525\",\"starttls\":\"true\",\"username\":\"testUser\"}")
+                .build();
+
+        return Set.of(createJwtSecretRequest, createDbSecretRequest, createEmailSecretRequest);
     }
 
 }

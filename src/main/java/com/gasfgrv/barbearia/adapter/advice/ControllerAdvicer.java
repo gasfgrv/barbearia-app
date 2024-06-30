@@ -1,8 +1,9 @@
 package com.gasfgrv.barbearia.adapter.advice;
 
-import com.gasfgrv.barbearia.adapter.exception.secret.ChaveSecretNaoEncontradaExeption;
-import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
 import com.gasfgrv.barbearia.adapter.exception.email.EnvioEmailException;
+import com.gasfgrv.barbearia.adapter.exception.secret.ChaveSecretNaoEncontradaExeption;
+import com.gasfgrv.barbearia.adapter.exception.secret.ErroAoProcessarValorSecretExeption;
+import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
 import com.gasfgrv.barbearia.application.exception.usuario.UsuarioNaoEncontradoException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,7 +27,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestControllerAdvice
-class ControllerAdvicer extends ResponseEntityExceptionHandler {
+public class ControllerAdvicer extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     @ApiResponse(responseCode = "401", content = {
@@ -41,7 +42,7 @@ class ControllerAdvicer extends ResponseEntityExceptionHandler {
                 .withTitle("Erro ao autenticar usuário")
                 .withDetail("Confira se as suas credenciais estão corretas")
                 .withStatus(status)
-                .withInstance(URI.create(obterUri(request)));
+                .withInstance(obterUri(request));
 
         return handleExceptionInternal(exception, problem, headers, status, request);
     }
@@ -59,7 +60,25 @@ class ControllerAdvicer extends ResponseEntityExceptionHandler {
                 .withTitle("Erro ao consultar chave")
                 .withDetail(exception.getMessage())
                 .withStatus(status)
-                .withInstance(URI.create(obterUri(request)));
+                .withInstance(obterUri(request));
+
+        return handleExceptionInternal(exception, problem, headers, status, request);
+    }
+
+    @ExceptionHandler(ErroAoProcessarValorSecretExeption.class)
+    @ApiResponse(responseCode = "500", content = {
+            @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
+    })
+    public ResponseEntity<Object> handleErroAoProcessarValorSecretExeption(ErroAoProcessarValorSecretExeption exception, WebRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpHeaders headers = new HttpHeaders();
+        headers.put(HttpHeaders.CONTENT_TYPE, java.util.List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+
+        Problem problem = Problem.create()
+                .withTitle("Erro inesperado ao consultar valor do segredo")
+                .withDetail(exception.getMessage())
+                .withStatus(status)
+                .withInstance(obterUri(request));
 
         return handleExceptionInternal(exception, problem, headers, status, request);
     }
@@ -77,7 +96,7 @@ class ControllerAdvicer extends ResponseEntityExceptionHandler {
                 .withTitle("Erro ao consultar chave")
                 .withDetail(exception.getMessage())
                 .withStatus(status)
-                .withInstance(URI.create(obterUri(request)));
+                .withInstance(obterUri(request));
 
         return handleExceptionInternal(exception, problem, headers, status, request);
     }
@@ -95,7 +114,7 @@ class ControllerAdvicer extends ResponseEntityExceptionHandler {
                 .withTitle("Erro ao alterar a senha")
                 .withDetail(exception.getMessage())
                 .withStatus(status)
-                .withInstance(URI.create(obterUri(request)));
+                .withInstance(obterUri(request));
 
         return handleExceptionInternal(exception, problem, headers, status, request);
     }
@@ -113,7 +132,7 @@ class ControllerAdvicer extends ResponseEntityExceptionHandler {
                 .withTitle("Erro ao enviar e-mail")
                 .withDetail(exception.getCause().getMessage())
                 .withStatus(status)
-                .withInstance(URI.create(obterUri(request)));
+                .withInstance(obterUri(request));
 
         return handleExceptionInternal(exception, problem, headers, status, request);
     }
@@ -139,13 +158,13 @@ class ControllerAdvicer extends ResponseEntityExceptionHandler {
                 .withTitle("Erro no valor dos parâmetros")
                 .withDetail(erros.toString().replaceAll("[\\[\\]]", ""))
                 .withStatus(HttpStatus.valueOf(status.value()))
-                .withInstance(URI.create(obterUri(request)));
+                .withInstance(obterUri(request));
 
         return handleExceptionInternal(exception, problem, httpHeaders, status, request);
     }
 
-    private String obterUri(WebRequest request) {
-        return ((ServletWebRequest) request).getRequest().getRequestURI();
+    private URI obterUri(WebRequest request) {
+        return URI.create(((ServletWebRequest) request).getRequest().getRequestURI());
     }
 
 }
