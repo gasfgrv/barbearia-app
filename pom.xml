@@ -37,9 +37,9 @@
         <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>
-            src/main/java/com/gasfgrv/barbearia/domain/*,
-            src/main/java/com/gasfgrv/barbearia/application/exception/**/*,
-            src/main/java/com/gasfgrv/barbearia/adapter/exception/**/*
+            **/domain/*,
+            **/exception/**/*,
+            **/filter/*
         </sonar.coverage.exclusions>
     </properties>
 
