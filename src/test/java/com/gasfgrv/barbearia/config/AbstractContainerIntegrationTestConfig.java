@@ -21,7 +21,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 
 @Testcontainers
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class AbstractContainerIntegrationTest {
+public class AbstractContainerIntegrationTestConfig {
 
     @Container
     private static final LocalStackContainer LOCAL_STACK_CONTAINER = new LocalStackContainer(
