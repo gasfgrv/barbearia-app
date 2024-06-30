@@ -24,7 +24,7 @@ resource "aws_db_instance" "db_instance" {
   vpc_security_group_ids          = [var.rds_security_group_id]
   skip_final_snapshot             = true
   publicly_accessible             = false
-  backup_retention_period         = 2
+  backup_retention_period         = 10
   storage_encrypted               = true
   kms_key_id                      = var.rds_kms_key_arn
   performance_insights_kms_key_id = var.rds_kms_key_arn
