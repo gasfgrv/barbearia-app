@@ -3,6 +3,7 @@ package com.gasfgrv.barbearia.application.service.usuario;
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchemaMock;
 import com.gasfgrv.barbearia.adapter.email.EmailAdapter;
+import com.gasfgrv.barbearia.adapter.token.DadosToken;
 import com.gasfgrv.barbearia.adapter.token.TokenService;
 import com.gasfgrv.barbearia.application.exception.usuario.UsuarioNaoEncontradoException;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
@@ -22,13 +23,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.UUID;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -51,6 +54,9 @@ class UsuarioServiceTest {
 
     @Mock
     private PasswordEncoder encoder;
+
+    @Mock
+    private Clock clock;
 
     @InjectMocks
     private UsuarioService service;
@@ -90,18 +96,23 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deve criar e enviar um token para reset da senha")
     void deveCriarEEnviarUmTokenParaResetDaSenha() {
+        ArgumentCaptor<DadosToken> dadosTokenCaptor = ArgumentCaptor.forClass(DadosToken.class);
         ArgumentCaptor<Usuario> usuarioCaptor = ArgumentCaptor.forClass(Usuario.class);
-        ArgumentCaptor<String> tokenCaptor = ArgumentCaptor.forClass(String.class);
 
         when(repository.findByLogin(anyString())).thenReturn(usuario);
-        doNothing().when(tokenService).criarResetToken(usuarioCaptor.capture(), tokenCaptor.capture());
+        when(tokenService.criarResetToken(dadosTokenCaptor.capture())).thenReturn(null);
         doNothing().when(emailAdapter).enviarResetToken(usuarioCaptor.capture(), anyString());
 
-        service.gerarTokenParaResetarSenhaUsuario(usuario.getLogin(), "http://localhost/teste",
-                UUID.randomUUID().toString());
+        ZonedDateTime now = ZonedDateTime.of(
+                LocalDateTime.of(2020, 8, 8, 12, 45),
+                ZoneOffset.of("-03:00"));
 
-        assertEquals(usuario, usuarioCaptor.getValue());
-        assertTrue(tokenCaptor.getValue().matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
+        when(clock.getZone()).thenReturn(now.getZone());
+        when(clock.instant()).thenReturn(now.toInstant());
+
+        service.gerarTokenParaResetarSenhaUsuario(usuario.getLogin(), "http://localhost/teste");
+
+        assertEquals(usuario.getLogin(), dadosTokenCaptor.getValue().subject());
     }
 
     @Test

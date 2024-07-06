@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public interface PasswordResetTokenRepositoryPort {
 
-    void salvarResetToken(Usuario usuario, String token);
+    void salvarResetToken(String login, LocalDateTime dataGeracao, String token);
 
     boolean existeTokenParaAtualizarSenha(String token);
 
