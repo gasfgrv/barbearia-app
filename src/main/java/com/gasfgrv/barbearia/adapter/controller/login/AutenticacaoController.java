@@ -45,6 +45,7 @@ public class AutenticacaoController {
         return ResponseEntity.ok(new DadosTokenJWT(tokenJwt));
     }
 
+    @Transactional
     @PostMapping("/reset")
     public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacaoForm dados, HttpServletRequest request) {
         logRequisicaoRecebida(request);

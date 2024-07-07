@@ -10,16 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class PasswordResetTokenRepositoryAdapter implements PasswordResetTokenRepositoryPort {
 
-    private final Clock clock;
     private final PasswordResetTokenJpaRepository repository;
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final Mapper<Usuario, UserDetails> mapper;

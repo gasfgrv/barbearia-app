@@ -5,6 +5,7 @@ import com.gasfgrv.barbearia.domain.port.database.perfil.PerfilRepositoryPort;
 import com.gasfgrv.barbearia.domain.port.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,7 @@ public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
     private final Mapper<GrantedAuthority, Perfil> mapper;
 
     @Override
+    @Cacheable(value = "perfil", key = "#nome")
     public Perfil findByNome(String nome) {
         log.info("Obtendo dados do perfil: {}", nome);
         return repository.findByNome(nome.toUpperCase())
