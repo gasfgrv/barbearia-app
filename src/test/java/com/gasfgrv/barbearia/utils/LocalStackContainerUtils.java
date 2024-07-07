@@ -1,7 +1,5 @@
 package com.gasfgrv.barbearia.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -26,12 +24,12 @@ public class LocalStackContainerUtils {
             if (listSecretsResponse.secretList().isEmpty()) {
                 Set.of(montarCreateRequest("jwtSecretTest", "15678"),
                         montarCreateRequest("databaseSecretTest",
-                                montarJson(Map.ofEntries(
+                                JsonUtils.montarJson(Map.ofEntries(
                                         Map.entry("password", "postgres"),
                                         Map.entry("username", "postgres")
                                 ))),
                         montarCreateRequest("emailSecretTest",
-                                montarJson(Map.ofEntries(
+                                JsonUtils.montarJson(Map.ofEntries(
                                         Map.entry("host", "localhost"),
                                         Map.entry("port", "3025"),
                                         Map.entry("username", "testUser"),
@@ -55,30 +53,21 @@ public class LocalStackContainerUtils {
         }
     }
 
-    private static DeleteSecretRequest montarDeleteRequest(String secretName) {
+    private DeleteSecretRequest montarDeleteRequest(String secretName) {
         return DeleteSecretRequest.builder()
                 .secretId(secretName)
                 .forceDeleteWithoutRecovery(true)
                 .build();
     }
 
-    private static String montarJson(Map<String, String> secretMap) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(secretMap);
-        } catch (JsonProcessingException e) {
-            return null;
-        }
-    }
-
-    private static CreateSecretRequest montarCreateRequest(String secretName, String secretValue) {
+    private CreateSecretRequest montarCreateRequest(String secretName, String secretValue) {
         return CreateSecretRequest.builder()
                 .name(secretName)
                 .secretString(secretValue)
                 .build();
     }
 
-    private static SecretsManagerClient getSecretsManagerClient(LocalStackContainer localStackContainer) {
+    private SecretsManagerClient getSecretsManagerClient(LocalStackContainer localStackContainer) {
         return SecretsManagerClient.builder()
                 .region(Region.of(localStackContainer.getRegion()))
                 .endpointOverride(localStackContainer.getEndpointOverride(SECRETSMANAGER))
@@ -86,7 +75,7 @@ public class LocalStackContainerUtils {
                 .build();
     }
 
-    private static AwsBasicCredentials getCredentials(LocalStackContainer localStackContainer) {
+    private AwsBasicCredentials getCredentials(LocalStackContainer localStackContainer) {
         return AwsBasicCredentials.builder()
                 .accessKeyId(localStackContainer.getAccessKey())
                 .secretAccessKey(localStackContainer.getSecretKey())

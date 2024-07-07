@@ -4,6 +4,7 @@ import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
 import com.gasfgrv.barbearia.adapter.token.DadosToken;
 import com.gasfgrv.barbearia.adapter.token.TokenService;
 import com.gasfgrv.barbearia.application.service.usuario.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,8 @@ public class AutenticacaoController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados) {
+    public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados, HttpServletRequest request) {
+        logRequisicaoRecebida(request);
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(dados.getLogin(), dados.getSenha());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -46,19 +48,25 @@ public class AutenticacaoController {
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacao dados, WebRequest request) {
-        String url = ((ServletWebRequest) request).getRequest().getRequestURL().toString();
+    public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacao dados, HttpServletRequest request) {
+        logRequisicaoRecebida(request);
+        String url = request.getRequestURL().toString();
         String token = usuarioService.gerarTokenParaResetarSenhaUsuario(dados.getLogin(), url);
         return ResponseEntity.ok(new DadosTokenJWT(token));
     }
 
     @Transactional
     @PutMapping("/reset/nova")
-    public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenha form, WebRequest request) {
+    public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenha form, HttpServletRequest request) {
+        logRequisicaoRecebida(request);
         String token = Objects.requireNonNull(request.getHeader("Authorization")).split("\\s")[1].trim();
         tokenService.validarResetToken(token);
         usuarioService.trocarSenha(tokenService.getSubject(token), form.getSenha());
         return ResponseEntity.noContent().build();
+    }
+
+    private void logRequisicaoRecebida(HttpServletRequest request) {
+        log.info("Requisição recebida para: [{}] - {}", request.getMethod(), request.getServletPath());
     }
 
 }

@@ -26,6 +26,9 @@
         <sonar.version>4.0.0.4121</sonar.version>
         <jacoco.version>0.8.12</jacoco.version>
         <surefire.version>3.3.0</surefire.version>
+        <greenmail.version>1.6.11</greenmail.version>
+        <awaitility.version>4.2.1</awaitility.version>
+        <rest-assured.version>5.4.0</rest-assured.version>
         <sonar.projectKey>barbearia-app</sonar.projectKey>
         <sonar.projectName>barbearia</sonar.projectName>
         <sonar.projectVersion>1.0</sonar.projectVersion>
@@ -41,8 +44,6 @@
             **/exception/**/*,
             **/filter/*
         </sonar.coverage.exclusions>
-        <greenmail.version>1.6.11</greenmail.version>
-        <awaitility.version>4.2.1</awaitility.version>
     </properties>
 
     <dependencies>
@@ -174,6 +175,16 @@
             <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -182,6 +193,13 @@
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
                 <version>${aws.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured-bom</artifactId>
+                <version>${rest-assured.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
