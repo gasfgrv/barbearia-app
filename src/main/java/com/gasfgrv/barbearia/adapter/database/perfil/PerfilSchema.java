@@ -18,6 +18,7 @@ public class PerfilSchema implements GrantedAuthority, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String nome;
 
     @Override

@@ -20,10 +20,13 @@ public class PasswordResetTokenSchema {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String token;
+
     @OneToOne
     @JoinColumn(name = "usuario_login", referencedColumnName = "login")
     private UsuarioSchema usuarioLogin;
+
     private LocalDateTime expiryDate;
 
 }

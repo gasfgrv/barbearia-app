@@ -21,7 +21,9 @@ public class UsuarioSchema implements UserDetails, Serializable {
 
     @Id
     private String login;
+
     private String senha;
+
     @OneToOne
     @JoinColumn(name = "perfil_id", referencedColumnName = "id")
     private PerfilSchema perfil;

@@ -15,7 +15,7 @@ public class PerfilService {
 
     public Perfil obterPerfil(String perfil) {
         log.info("Obtendo os dados do perfil: {}", perfil);
-        return repository.findByNome(perfil.toUpperCase());
+        return repository.findByNome(perfil);
     }
 
 }

@@ -6,6 +6,7 @@ import com.gasfgrv.barbearia.domain.port.database.reset.PasswordResetTokenReposi
 import com.gasfgrv.barbearia.domain.port.database.usuario.UsuarioRepositoryPort;
 import com.gasfgrv.barbearia.domain.port.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class PasswordResetTokenRepositoryAdapter implements PasswordResetTokenRepositoryPort {
@@ -24,6 +26,7 @@ public class PasswordResetTokenRepositoryAdapter implements PasswordResetTokenRe
 
     @Override
     public void salvarResetToken(String login, LocalDateTime dataGeracao, String token) {
+        log.info("Salvando dados do token na base dade dados");
         PasswordResetTokenSchema schema = new PasswordResetTokenSchema();
         schema.setToken(token);
         Usuario usuario = usuarioRepositoryPort.findByLogin(login);
@@ -34,12 +37,16 @@ public class PasswordResetTokenRepositoryAdapter implements PasswordResetTokenRe
 
     @Override
     public boolean existeTokenParaAtualizarSenha(String token) {
-        return Optional.ofNullable(repository.findByToken(token)).isPresent();
+        log.info("Verificando a existencia do token na base de dados");
+        return repository.findByToken(token).isPresent();
     }
 
     @Override
     public LocalDateTime obterExpiracaoToken(String token) {
-        return repository.findByToken(token).map(PasswordResetTokenSchema::getExpiryDate).orElse(LocalDateTime.MIN);
+        log.info("Obtendo a data de expiração do token");
+        return repository.findByToken(token)
+                .map(PasswordResetTokenSchema::getExpiryDate)
+                .orElse(LocalDateTime.MIN);
     }
 
 }
