@@ -15,6 +15,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import static com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException.TipoErro.EXPIRADO;
+import static com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException.TipoErro.INEXISTENTE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -55,11 +58,15 @@ public class TokenService {
     public void validarResetToken(String token) {
         log.info("Validando dados do token: {}", token);
         boolean tokenNaoExiste = !passwordResetTokenRepository.existeTokenParaAtualizarSenha(token);
-        boolean isExpirado = passwordResetTokenRepository.obterExpiracaoToken(token).isBefore(LocalDateTime.now(clock));
+        if (tokenNaoExiste) {
+            log.error("Token inexistente");
+            throw new ResetTokenInvalidoException(INEXISTENTE);
+        }
 
-        if (tokenNaoExiste || isExpirado) {
+        boolean isExpirado = passwordResetTokenRepository.obterExpiracaoToken(token).isBefore(LocalDateTime.now(clock));
+        if (isExpirado) {
             log.error("Token inválido ou inexistente");
-            throw new ResetTokenInvalidoException();
+            throw new ResetTokenInvalidoException(EXPIRADO);
         }
     }
 

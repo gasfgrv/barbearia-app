@@ -85,7 +85,7 @@ class TokenServiceTest extends AbstractContainerIntegrationTestConfig {
 
         LocalDateTime dataGeracao = LocalDateTime.of(2020, 7, 7, 1, 10);
         String schema = UsuarioSchemaMock.montarUsuarioSchema().getLogin();
-        String token = tokenService.gerarToken(new DadosToken(schema, dataGeracao));
+        String token = tokenService.gerarToken(new DadosToken(schema, dataGeracao)).replaceAll("\\.", "@");
 
         assertThrows(ResetTokenInvalidoException.class,
                 () -> tokenService.validarResetToken(token));

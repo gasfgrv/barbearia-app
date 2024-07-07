@@ -40,9 +40,13 @@
         <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>
-            **/domain/*,
+            **/domain/**,
             **/exception/**/*,
-            **/filter/*
+            **/filter/*,
+            **/advice/*,
+            **/*Form.java,
+            **/*Schema.java,
+            **/*Application.java
         </sonar.coverage.exclusions>
     </properties>
 

@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.WebRequest;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -37,7 +35,7 @@ public class AutenticacaoController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados, HttpServletRequest request) {
+    public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacaoForm dados, HttpServletRequest request) {
         logRequisicaoRecebida(request);
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(dados.getLogin(), dados.getSenha());
@@ -48,7 +46,7 @@ public class AutenticacaoController {
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacao dados, HttpServletRequest request) {
+    public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacaoForm dados, HttpServletRequest request) {
         logRequisicaoRecebida(request);
         String url = request.getRequestURL().toString();
         String token = usuarioService.gerarTokenParaResetarSenhaUsuario(dados.getLogin(), url);
@@ -57,7 +55,7 @@ public class AutenticacaoController {
 
     @Transactional
     @PutMapping("/reset/nova")
-    public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenha form, HttpServletRequest request) {
+    public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenhaForm form, HttpServletRequest request) {
         logRequisicaoRecebida(request);
         String token = Objects.requireNonNull(request.getHeader("Authorization")).split("\\s")[1].trim();
         tokenService.validarResetToken(token);
