@@ -2,13 +2,19 @@ package com.gasfgrv.barbearia.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.icegreen.greenmail.configuration.GreenMailConfiguration;
+import com.icegreen.greenmail.junit5.GreenMailExtension;
+import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -111,12 +117,12 @@ public class AbstractContainerIntegrationTestConfig {
 
         CreateSecretRequest createEmailSecretRequest = montarCreateRequest("emailSecretTest",
                 montarJson(Map.ofEntries(
-                        Map.entry("auth", "true"),
-                        Map.entry("host", "sandbox.smtp"),
+                        Map.entry("host", "localhost"),
+                        Map.entry("port", "3025"),
+                        Map.entry("username", "testUser"),
                         Map.entry("password", "1234567890"),
-                        Map.entry("port", "2525"),
-                        Map.entry("starttls", "true"),
-                        Map.entry("username", "testUser")
+                        Map.entry("auth", "true"),
+                        Map.entry("starttls", "true")
                 )));
 
         return Set.of(createJwtSecretRequest, createDbSecretRequest, createEmailSecretRequest);

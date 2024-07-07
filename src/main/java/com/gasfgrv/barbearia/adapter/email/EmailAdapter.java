@@ -22,11 +22,11 @@ public class EmailAdapter implements EmailPort {
 
     @Override
     @Async("emailExecutor")
-    public void enviarResetToken(Usuario usuario, String url) {
+    public void enviarResetToken(String login, String url) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             mimeMessage.setFrom(new InternetAddress("contato@barbearia.com"));
-            mimeMessage.setRecipients(Message.RecipientType.TO, usuario.getLogin());
+            mimeMessage.setRecipients(Message.RecipientType.TO, login);
             mimeMessage.setSubject("Nova Senha");
             String path = url + "/nova";
             String htmlContent = String.format("<a href=\"%s\">Link para gerar a nova senha</a>", path);

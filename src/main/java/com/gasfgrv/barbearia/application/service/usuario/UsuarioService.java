@@ -49,7 +49,7 @@ public class UsuarioService implements UserDetailsService {
         String token = tokenService.criarResetToken(dadosResetToken);
 
         log.info("Enviando token para reset da senha via e-mail");
-        emailAdapter.enviarResetToken(usuario, url);
+        emailAdapter.enviarResetToken(usuario.getLogin(), url);
         return token;
     }
 

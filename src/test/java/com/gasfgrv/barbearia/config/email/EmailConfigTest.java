@@ -31,8 +31,8 @@ class EmailConfigTest extends AbstractContainerIntegrationTestConfig {
 
         assertInstanceOf(JavaMailSenderImpl.class, bean);
         assertNotNull(bean);
-        assertEquals("sandbox.smtp", javaMailSender.getHost());
-        assertEquals(2525, javaMailSender.getPort());
+        assertEquals("localhost", javaMailSender.getHost());
+        assertEquals(3025, javaMailSender.getPort());
         assertEquals("testUser", javaMailSender.getUsername());
         assertEquals("1234567890", javaMailSender.getPassword());
 

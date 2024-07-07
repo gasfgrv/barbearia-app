@@ -97,7 +97,7 @@ class UsuarioServiceTest {
     @DisplayName("Deve criar e enviar um token para reset da senha")
     void deveCriarEEnviarUmTokenParaResetDaSenha() {
         ArgumentCaptor<DadosToken> dadosTokenCaptor = ArgumentCaptor.forClass(DadosToken.class);
-        ArgumentCaptor<Usuario> usuarioCaptor = ArgumentCaptor.forClass(Usuario.class);
+        ArgumentCaptor<String> usuarioCaptor = ArgumentCaptor.forClass(String.class);
 
         when(repository.findByLogin(anyString())).thenReturn(usuario);
         when(tokenService.criarResetToken(dadosTokenCaptor.capture())).thenReturn(null);
@@ -113,6 +113,7 @@ class UsuarioServiceTest {
         service.gerarTokenParaResetarSenhaUsuario(usuario.getLogin(), "http://localhost/teste");
 
         assertEquals(usuario.getLogin(), dadosTokenCaptor.getValue().subject());
+        assertEquals(usuario.getLogin(), usuarioCaptor.getValue());
     }
 
     @Test
