@@ -27,7 +27,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestControllerAdvice
-public class ControllerAdvicer extends ResponseEntityExceptionHandler {
+public class ControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     @ApiResponse(responseCode = "401", content = {
