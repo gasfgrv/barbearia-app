@@ -39,3 +39,6 @@ build/
 **/terraform.tfstate
 **/terraform.tfstate.backup
 **.tfvars
+
+### Env Files ###
+*.env
