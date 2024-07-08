@@ -4,10 +4,14 @@ import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
 import com.gasfgrv.barbearia.adapter.token.DadosToken;
 import com.gasfgrv.barbearia.adapter.token.TokenService;
 import com.gasfgrv.barbearia.application.service.usuario.UsuarioService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.mediatype.problem.Problem;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,6 +39,9 @@ public class AutenticacaoController {
     private final UsuarioService usuarioService;
 
     @PostMapping
+    @ApiResponse(responseCode = "200", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = DadosTokenJWT.class))
+    })
     public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacaoForm dados, HttpServletRequest request) {
         logRequisicaoRecebida(request);
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -47,6 +54,9 @@ public class AutenticacaoController {
 
     @Transactional
     @PostMapping("/reset")
+    @ApiResponse(responseCode = "200", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = DadosTokenJWT.class))
+    })
     public ResponseEntity<DadosTokenJWT> gerarEEnviarResetToken(@RequestBody @Valid DadosRecuperacaoForm dados, HttpServletRequest request) {
         logRequisicaoRecebida(request);
         String url = request.getRequestURL().toString();
@@ -56,6 +66,9 @@ public class AutenticacaoController {
 
     @Transactional
     @PutMapping("/reset/nova")
+    @ApiResponse(responseCode = "204", content = {
+            @Content(mediaType = "application/json")
+    })
     public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenhaForm form, HttpServletRequest request) {
         logRequisicaoRecebida(request);
         String token = Objects.requireNonNull(request.getHeader("Authorization")).split("\\s")[1].trim();
