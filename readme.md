@@ -19,3 +19,12 @@ terraform destroy -auto-approve -var-file=project.tfvars -target=module.secrets
 cd ../../
 docker compose down
 ```
+
+### Links Uteis
+
+- Sonar: http://localhost:9000
+- Prometheus: http://localhost:9090/
+- Swagger UI: http://localhost:8080/swagger/ui.html
+- OpenApi: http://localhost:8080/api-docs
+- Actuaror: http://localhost:8080/actuator
+- Grafana: http://localhost:3000
