@@ -48,6 +48,7 @@
             **/*Schema.java,
             **/*Application.java
         </sonar.coverage.exclusions>
+        <testcontainers-redis.version>2.2.2</testcontainers-redis.version>
     </properties>
 
     <dependencies>
@@ -161,6 +162,12 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>localstack</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.redis</groupId>
+            <artifactId>testcontainers-redis</artifactId>
+            <version>${testcontainers-redis.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

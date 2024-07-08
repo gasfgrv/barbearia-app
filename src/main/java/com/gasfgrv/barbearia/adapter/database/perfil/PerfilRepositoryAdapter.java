@@ -18,7 +18,7 @@ public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
     private final Mapper<GrantedAuthority, Perfil> mapper;
 
     @Override
-    @Cacheable(value = "perfil", key = "#nome")
+    @Cacheable(cacheNames = "perfil", key = "#root.method.name + '_' + #nome")
     public Perfil findByNome(String nome) {
         log.info("Obtendo dados do perfil: {}", nome);
         return repository.findByNome(nome.toUpperCase())

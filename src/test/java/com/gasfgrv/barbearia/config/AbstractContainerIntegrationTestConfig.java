@@ -4,6 +4,7 @@ import com.gasfgrv.barbearia.utils.LocalStackContainerUtils;
 import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -35,6 +36,10 @@ public abstract class AbstractContainerIntegrationTestConfig {
             .withUsername("postgres")
             .withPassword("postgres");
 
+    protected static RedisContainer redisContainer = new RedisContainer(
+            DockerImageName.parse("redis:latest"))
+            .withExposedPorts(6379);
+
     @RegisterExtension
     protected static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
             .withConfiguration(GreenMailConfiguration.aConfig().withUser("testUser", "1234567890"))
@@ -43,6 +48,7 @@ public abstract class AbstractContainerIntegrationTestConfig {
     static {
         localStackContainer.start();
         postgreSQLContainer.start();
+        redisContainer.start();
     }
 
     @DynamicPropertySource
@@ -58,6 +64,9 @@ public abstract class AbstractContainerIntegrationTestConfig {
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+
+        registry.add("spring.redis.host", () -> redisContainer.getHost());
+        registry.add("spring.redis.port", () -> redisContainer.getFirstMappedPort());
     }
 
     @BeforeAll

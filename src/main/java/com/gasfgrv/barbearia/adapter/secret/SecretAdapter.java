@@ -22,7 +22,7 @@ public class SecretAdapter implements SecretPort {
     private final ObjectMapper mapper;
 
     @Override
-    @Cacheable(value = "secret", key = "#nomeSecret")
+    @Cacheable(cacheNames = "secrets_nome", key = "#root.method.name + '_' + #nomeSecret")
     public String obterSecret(String nomeSecret) {
         GetSecretValueRequest getSecretValueRequest = montarGetSecretValueRequest(nomeSecret);
         log.info("Obtendo o valor do secret '{}'", getSecretValueRequest.secretId());
@@ -30,7 +30,7 @@ public class SecretAdapter implements SecretPort {
     }
 
     @Override
-    @Cacheable(value = "secret_chave", key = "#chave")
+    @Cacheable(cacheNames = "secrets_chave", key = "#root.method.name + '_' + #nome + '_' + #chave")
     public String obterSecret(String nome, String chave) {
         try {
             GetSecretValueRequest getSecretValueRequest = montarGetSecretValueRequest(nome);

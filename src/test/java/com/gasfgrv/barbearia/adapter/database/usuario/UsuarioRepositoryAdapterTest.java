@@ -18,11 +18,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UsuarioRepositoryAdapterTest extends AbstractContainerIntegrationTestConfig {
+
+    private static final String BCRYPT_PATTERN = "^\\$2[aby]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$";
 
     @Autowired
     UsuarioRepositoryPort repository;
@@ -42,7 +45,7 @@ class UsuarioRepositoryAdapterTest extends AbstractContainerIntegrationTestConfi
         Usuario atual = repository.findByLogin(usuario.getLogin());
 
         assertEquals(usuario.getLogin(), atual.getLogin());
-        assertEquals(usuario.getSenha(), atual.getSenha());
+        assertTrue(atual.getSenha().matches(BCRYPT_PATTERN));
     }
 
     @Test
@@ -53,7 +56,7 @@ class UsuarioRepositoryAdapterTest extends AbstractContainerIntegrationTestConfi
 
         assertNotNull(atual);
         assertEquals(usuario.getLogin(), atual.getLogin());
-        assertEquals(usuario.getSenha(), atual.getSenha());
+        assertTrue(atual.getSenha().matches(BCRYPT_PATTERN));
     }
 
     @Test
