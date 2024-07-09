@@ -1,23 +1,24 @@
 package com.gasfgrv.barbearia.adapter.database.usuario;
 
+import java.util.Collection;
+import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.gasfgrv.barbearia.adapter.database.perfil.PerfilSchema;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "usuario")
-public class UsuarioSchema implements UserDetails, Serializable {
+public class UsuarioSchema implements UserDetails {
 
     @Id
     private String login;
