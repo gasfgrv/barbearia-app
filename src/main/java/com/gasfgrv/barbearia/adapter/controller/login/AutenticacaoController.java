@@ -24,7 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Objects;
+
+import static com.gasfgrv.barbearia.adapter.utils.RequestUtils.capturarHeader;
+import static com.gasfgrv.barbearia.adapter.utils.RequestUtils.logRequisicaoRecebida;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @RestController
@@ -70,14 +73,10 @@ public class AutenticacaoController {
     })
     public ResponseEntity<Void> alterarSenha(@RequestBody @Valid NovaSenhaForm form, HttpServletRequest request) {
         logRequisicaoRecebida(request);
-        String token = Objects.requireNonNull(request.getHeader("Authorization")).split("\\s")[1].trim();
+        String token = capturarHeader(AUTHORIZATION, request).split("\\s")[1].trim();
         tokenService.validarResetToken(token);
         usuarioService.trocarSenha(tokenService.getSubject(token), form.getSenha());
         return ResponseEntity.noContent().build();
-    }
-
-    private void logRequisicaoRecebida(HttpServletRequest request) {
-        log.info("Requisição recebida para: [{}] - {}", request.getMethod(), request.getServletPath());
     }
 
 }

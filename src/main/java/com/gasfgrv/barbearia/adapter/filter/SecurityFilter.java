@@ -18,6 +18,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.gasfgrv.barbearia.adapter.utils.RequestUtils.capturarHeader;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @Component
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
@@ -44,9 +47,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private String recuperarToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
+        String authorizationHeader = capturarHeader(AUTHORIZATION, request);
         return authorizationHeader != null
-                ? authorizationHeader.replace("Bearer ", "")
+                ? authorizationHeader.split("\\s")[1].trim()
                 : null;
     }
 
