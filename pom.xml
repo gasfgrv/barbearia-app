@@ -38,7 +38,8 @@
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.binaries>target/classes</sonar.java.binaries>
         <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>
             **/domain/**,
             **/exception/**/*,
@@ -49,6 +50,7 @@
             **/*Application.java
         </sonar.coverage.exclusions>
         <testcontainers-redis.version>2.2.2</testcontainers-redis.version>
+        <logback-json.version>0.1.5</logback-json.version>
     </properties>
 
     <dependencies>
@@ -199,6 +201,16 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>json-schema-validator</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+            <version>${logback-json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <version>${logback-json.version}</version>
         </dependency>
     </dependencies>
 
