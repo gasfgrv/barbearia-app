@@ -8,7 +8,6 @@ import com.gasfgrv.barbearia.adapter.exception.secret.ErroAoProcessarValorSecret
 import com.gasfgrv.barbearia.domain.port.secret.SecretPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
@@ -22,7 +21,6 @@ public class SecretAdapter implements SecretPort {
     private final ObjectMapper mapper;
 
     @Override
-    @Cacheable(cacheNames = "secrets_nome", key = "#root.method.name + '_' + #nomeSecret")
     public String obterSecret(String nomeSecret) {
         GetSecretValueRequest getSecretValueRequest = montarGetSecretValueRequest(nomeSecret);
         log.info("Obtendo o valor do secret '{}'", getSecretValueRequest.secretId());
@@ -30,7 +28,6 @@ public class SecretAdapter implements SecretPort {
     }
 
     @Override
-    @Cacheable(cacheNames = "secrets_chave", key = "#root.method.name + '_' + #nome + '_' + #chave")
     public String obterSecret(String nome, String chave) {
         try {
             GetSecretValueRequest getSecretValueRequest = montarGetSecretValueRequest(nome);
