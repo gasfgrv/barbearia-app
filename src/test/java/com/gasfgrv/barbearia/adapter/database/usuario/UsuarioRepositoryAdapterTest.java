@@ -6,13 +6,11 @@ import com.gasfgrv.barbearia.domain.entity.UsuarioMock;
 import com.gasfgrv.barbearia.domain.port.database.usuario.UsuarioRepositoryPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,27 +19,29 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UsuarioRepositoryAdapterTest extends AbstractContainerIntegrationTestConfig {
 
-    private static final String BCRYPT_PATTERN = "^\\$2[aby]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$";
+    static final String BCRYPT_PATTERN = "^\\$2[aby]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$";
 
     @Autowired
     UsuarioRepositoryPort repository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     Usuario usuario;
 
     @BeforeEach
     void setUp() {
         usuario = UsuarioMock.montarUsuario();
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        repository.salvarUsuario(usuario);
     }
 
     @Test
-    @Order(1)
     @DisplayName("Deve inserir os dados do usuário na base de dados")
     void deveInserirOsDadosDoUsuarioNaBaseDeDados() {
-        repository.salvarUsuario(usuario);
         Usuario atual = repository.findByLogin(usuario.getLogin());
 
         assertEquals(usuario.getLogin(), atual.getLogin());
@@ -49,7 +49,6 @@ class UsuarioRepositoryAdapterTest extends AbstractContainerIntegrationTestConfi
     }
 
     @Test
-    @Order(2)
     @DisplayName("Deve obter os dados do usuário")
     void deveObterOsDadosDoUsuario() {
         Usuario atual = repository.findByLogin(usuario.getLogin());
@@ -60,7 +59,6 @@ class UsuarioRepositoryAdapterTest extends AbstractContainerIntegrationTestConfi
     }
 
     @Test
-    @Order(3)
     @DisplayName("Deve retornar nulo quando não houver dados do usuário")
     void deveRetornarNuloQuandoNaoHouverDadosDoUsuario() {
         Usuario atual = repository.findByLogin("mockUser");
