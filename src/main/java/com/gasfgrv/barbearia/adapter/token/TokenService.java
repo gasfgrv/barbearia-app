@@ -2,6 +2,7 @@ package com.gasfgrv.barbearia.adapter.token;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
 import com.gasfgrv.barbearia.domain.port.database.reset.PasswordResetTokenRepositoryPort;
 import com.gasfgrv.barbearia.domain.port.secret.SecretPort;
@@ -17,6 +18,7 @@ import java.time.ZoneOffset;
 
 import static com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException.TipoErro.EXPIRADO;
 import static com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException.TipoErro.INEXISTENTE;
+import static com.gasfgrv.barbearia.adapter.utils.ResponseUtils.montarJson;
 
 @Slf4j
 @Service
@@ -29,9 +31,10 @@ public class TokenService {
     private final Clock clock;
     private final SecretPort secretPort;
     private final PasswordResetTokenRepositoryPort passwordResetTokenRepository;
+    private final ObjectMapper mapper;
 
     public String gerarToken(DadosToken dadosToken) {
-        log.info("Gerando token com os seguintes dados: {}", dadosToken);
+        log.info("Gerando token com os seguintes dados: {}", montarJson(mapper, dadosToken));
         return JWT.create()
                 .withIssuer("barbearia")
                 .withSubject(dadosToken.subject())
@@ -49,7 +52,7 @@ public class TokenService {
     }
 
     public String criarResetToken(DadosToken dadosToken) {
-        log.info("Salvando token de reset de senha com os seguintes dados: {}", dadosToken);
+        log.info("Salvando token de reset de senha com os seguintes dados: {}", montarJson(mapper, dadosToken));
         String token = gerarToken(dadosToken);
         passwordResetTokenRepository.salvarResetToken(dadosToken.subject(), dadosToken.dataGeracao(), token);
         return token;
