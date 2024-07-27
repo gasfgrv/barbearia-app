@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -100,7 +101,7 @@ class UsuarioServiceTest {
         ArgumentCaptor<String> usuarioCaptor = ArgumentCaptor.forClass(String.class);
 
         when(repository.findByLogin(anyString())).thenReturn(usuario);
-        when(tokenService.criarResetToken(dadosTokenCaptor.capture())).thenReturn(null);
+        when(tokenService.criarResetToken(dadosTokenCaptor.capture())).thenReturn(UsuarioMock.montarTokenJWT());
         doNothing().when(emailAdapter).enviarResetToken(usuarioCaptor.capture(), anyString());
 
         ZonedDateTime now = ZonedDateTime.of(
@@ -110,7 +111,8 @@ class UsuarioServiceTest {
         when(clock.getZone()).thenReturn(now.getZone());
         when(clock.instant()).thenReturn(now.toInstant());
 
-        service.gerarTokenParaResetarSenhaUsuario(usuario.getLogin(), "http://localhost/teste");
+        String token = service.gerarTokenParaResetarSenhaUsuario(usuario.getLogin(), "http://localhost/teste");
+        assertTrue(token.matches("^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$"));
 
         assertEquals(usuario.getLogin(), dadosTokenCaptor.getValue().subject());
         assertEquals(usuario.getLogin(), usuarioCaptor.getValue());
@@ -123,7 +125,7 @@ class UsuarioServiceTest {
         String senhaAntiga = usuario.getSenha();
 
         when(repository.findByLogin(anyString())).thenReturn(usuario);
-        when(encoder.encode(anyString())).thenReturn("$2y$10$7TIzNabfy6J4in2DfbbGKe1ID/Cc9H6g6DVzoooMZv1yLrwS/cthq");
+        when(encoder.encode(anyString())).thenReturn(UsuarioMock.montarSenhaCriptografada());
         doNothing().when(repository).salvarUsuario(usuarioCaptor.capture());
 
         service.trocarSenha(usuario.getLogin(), "teste");

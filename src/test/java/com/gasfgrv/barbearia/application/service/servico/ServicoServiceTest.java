@@ -15,7 +15,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +27,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
 class ServicoServiceTest {
 
     @Mock
@@ -61,7 +65,10 @@ class ServicoServiceTest {
         assertEquals(servico, novoServico);
 
         assertEquals(servico.getId(), captor.getValue().getId());
+        assertTrue(servico.getId().toString().matches("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"));
+
         assertEquals(servico.isAtivo(), captor.getValue().isAtivo());
+        assertTrue(servico.isAtivo());
 
         verify(repository, times(1)).listarServicos();
         verify(repository, times(1)).salvarServico(captor.getValue());
@@ -145,6 +152,8 @@ class ServicoServiceTest {
 
         Servico servico = ServicoMock.montarServico();
         UUID servicoId = servico.getId();
+        String nomeAntigo = servico.getNome();
+        String descricaoAntiga = servico.getDescricao();
 
         when(repository.obterDadosServico(servicoId)).thenReturn(Optional.of(servico));
         when(repository.salvarServico(captor.capture())).thenReturn(servico);
@@ -154,9 +163,19 @@ class ServicoServiceTest {
 
         assertNotNull(servicoAtualizado);
 
+        assertNotNull(servicoAtualizado.getNome());
+        assertNotEquals(nomeAntigo, servicoAtualizado.getNome());
         assertEquals(captorValue.getNome(), servicoAtualizado.getNome());
+
+        assertNotNull(servicoAtualizado.getDescricao());
+        assertNotEquals(descricaoAntiga, servicoAtualizado.getDescricao());
         assertEquals(captorValue.getDescricao(), servicoAtualizado.getDescricao());
+
+        assertNotNull(servicoAtualizado.getPreco());
+        assertEquals(1, servicoAtualizado.getPreco().compareTo(BigDecimal.TEN));
         assertEquals(captorValue.getPreco(), servicoAtualizado.getPreco());
+
+        assertEquals(1, Integer.compare(servicoAtualizado.getDuracao(), 10));
         assertEquals(captorValue.getDuracao(), servicoAtualizado.getDuracao());
 
         verify(repository, times(1)).obterDadosServico(any(UUID.class));
@@ -259,7 +278,7 @@ class ServicoServiceTest {
 
     @Test
     @DisplayName("Deve listar todos os serviços")
-    void deveListarTodosOsServicos() {
+    void deveListarTodosOsServicos(CapturedOutput output) {
         Servico servicoAtivo = ServicoMock.montarServico();
         Servico servicoInativo = ServicoMock.montarServicoDesativado();
 
@@ -269,13 +288,14 @@ class ServicoServiceTest {
         List<Servico> list = service.listarServicos(false, 0, 2);
 
         assertEquals(2, list.size());
+        assertTrue(output.getOut().contains("Listando todos serviços"));
 
         verify(repository, times(1)).listarServicos(anyBoolean(), anyInt(), anyInt());
     }
 
     @Test
     @DisplayName("Deve listar apenas serviços ativos")
-    void deveListarApenasOsServicosAtivos() {
+    void deveListarApenasOsServicosAtivos(CapturedOutput output) {
         Servico servicoAtivo = ServicoMock.montarServico();
 
         when(repository.listarServicos(eq(true), anyInt(), anyInt()))
@@ -284,6 +304,7 @@ class ServicoServiceTest {
         List<Servico> list = service.listarServicos(true, 0, 2);
 
         assertEquals(1, list.size());
+        assertTrue(output.getOut().contains("Listando serviços ativos"));
 
         verify(repository, times(1)).listarServicos(anyBoolean(), anyInt(), anyInt());
     }
