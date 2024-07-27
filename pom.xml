@@ -38,8 +38,7 @@
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.binaries>target/classes</sonar.java.binaries>
         <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>
             **/domain/**,
             **/exception/**/*,
@@ -257,11 +256,9 @@
                     <verbose>true</verbose>
                     <targetClasses>
                         <param>com.gasfgrv.barbearia.application.*</param>
-                        <param>com.gasfgrv.barbearia.adapter.*</param>
                     </targetClasses>
                     <targetTests>
                         <param>com.gasfgrv.barbearia.application.*</param>
-                        <param>com.gasfgrv.barbearia.adapter.*</param>
                     </targetTests>
                 </configuration>
             </plugin>
