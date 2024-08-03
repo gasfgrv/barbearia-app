@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @UtilityClass
-class ServicoSchemaMock {
+public class ServicoSchemaMock {
 
     public ServicoSchema montarServicoSchema() {
         ServicoSchema servico = new ServicoSchema();

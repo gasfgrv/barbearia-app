@@ -1,5 +1,7 @@
 package com.gasfgrv.barbearia.domain.entity;
 
+import com.gasfgrv.barbearia.adapter.controller.servico.AtualizarServicoForm;
+import com.gasfgrv.barbearia.adapter.controller.servico.NovoServicoForm;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -52,5 +54,25 @@ public class ServicoMock {
 
     public static Servico montarServicoAtualizacaoVazio() {
         return new Servico();
+    }
+
+    public static AtualizarServicoForm montarServicoAtualizacaoForm() {
+        Servico servico = montarServicoAtualizacao();
+        AtualizarServicoForm form = new AtualizarServicoForm();
+        form.setDescricao(servico.getDescricao());
+        form.setDuracao(servico.getDuracao());
+        form.setNome(servico.getNome());
+        form.setPreco(servico.getPreco());
+        return form;
+    }
+
+    public NovoServicoForm montarNovoServicoForm() {
+        Servico servico = montarNovoServico();
+        NovoServicoForm form = new NovoServicoForm();
+        form.setDescricao(servico.getDescricao());
+        form.setDuracao(servico.getDuracao());
+        form.setNome(servico.getNome());
+        form.setPreco(servico.getPreco());
+        return form;
     }
 }
