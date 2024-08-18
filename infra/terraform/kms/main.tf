@@ -4,7 +4,7 @@ locals {
   ecr_alias               = "alias/ecs-key"
   rds_alias               = "alias/rds-alias"
   secrets_alias           = "alias/secrets-alias"
-  deletion_window_in_days = 10
+  deletion_window_in_days = 7
   enable_key_rotation     = true
 }
 
