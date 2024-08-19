@@ -4,6 +4,7 @@ import com.gasfgrv.barbearia.domain.entity.Servico;
 import com.gasfgrv.barbearia.domain.port.database.servico.ServicoRepositoryPort;
 import com.gasfgrv.barbearia.domain.port.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
@@ -31,6 +33,7 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
             @CacheEvict(cacheNames = "servicos", allEntries = true)
     })
     public Servico salvarServico(Servico servico) {
+        log.info("Salvando dados do serviço {}", servico.getId());
         ServicoSchema entity = servicoToServicoSchemaMapper.map(servico);
         ServicoSchema save = repository.save(entity);
         return servicoSchemaToServicoMapper.map(save);
@@ -42,6 +45,7 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
             @CacheEvict(cacheNames = "servicos", allEntries = true)
     })
     public void desativarServico(Servico servico) {
+        log.info("Desativando serviço {}", servico.getId());
         alterarStatusDoServico(servico, false);
     }
 
@@ -51,12 +55,14 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
             @CacheEvict(cacheNames = "servicos", allEntries = true)
     })
     public void reativarServico(Servico servico) {
+        log.info("Reativando serviço {}", servico.getId());
         alterarStatusDoServico(servico, true);
     }
 
     @Override
     @Cacheable(cacheNames = "servico", key = "#idServico")
     public Optional<Servico> obterDadosServico(UUID idServico) {
+        log.info("Adicionando os dados do serviço {} no cache", idServico);
         return repository.findById(idServico)
                 .map(servicoSchemaToServicoMapper::map);
     }
@@ -64,6 +70,7 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
     @Override
     @Cacheable(cacheNames = "servicos")
     public List<Servico> listarServicos() {
+        log.info("Adicionando a lista de serviços no cache");
         return repository.findAll().stream()
                 .map(servicoSchemaToServicoMapper::map)
                 .toList();
@@ -73,10 +80,18 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
     public List<Servico> listarServicos(boolean listarApenasAtivos, int pagina, int quantidade) {
         Pageable paginacao = PageRequest.of(pagina, quantidade, Sort.by("nome"));
 
-        Page<ServicoSchema> servicos = listarApenasAtivos
-                ? repository.findByAtivoTrue(paginacao)
-                : repository.findAll(paginacao);
+        Page<ServicoSchema> servicos;
+        String mensagemDeLog;
 
+        if (listarApenasAtivos) {
+            servicos = repository.findByAtivoTrue(paginacao);
+            mensagemDeLog = "Listando {} serviços ativos na página {}";
+        } else {
+            servicos = repository.findAll(paginacao);
+            mensagemDeLog = "Listando {} serviços na página {}";
+        }
+
+        log.info(mensagemDeLog, quantidade, (pagina + 1));
         return servicos.getContent().stream()
                 .map(servicoSchemaToServicoMapper::map).
                 toList();
