@@ -1,15 +1,16 @@
 package com.gasfgrv.barbearia.adapter.advice;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.argument.StructuredArguments;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,8 +25,6 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ResponseAdvice implements ResponseBodyAdvice<Object> {
-
-    private final ObjectMapper mapper;
 
     @Override
     public boolean supports(@NonNull MethodParameter returnType,
@@ -46,7 +45,9 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 
         if (!contemRotaQueNaoEhDeNegocio) {
             DadosResposta resposta = DadosResposta.builder()
+                    .uri(request.getURI().getPath())
                     .metodo(request.getMethod().name())
+                    .status(HttpStatus.valueOf(((ServletServerHttpResponse) response).getServletResponse().getStatus()).value())
                     .headers(obterHeadersDaResponse(response))
                     .corpo(body)
                     .build();
@@ -63,10 +64,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
     }
 
     @Builder
-    record DadosResposta(
-            String metodo,
-            Map<String, String> headers,
-            Object corpo
-    ) {
+    record DadosResposta(String uri, String metodo, int status, Map<String, String> headers, Object corpo) {
     }
+
 }
