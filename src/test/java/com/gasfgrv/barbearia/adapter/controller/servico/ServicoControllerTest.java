@@ -35,7 +35,7 @@ class ServicoControllerTest extends AbstractContainerIntegrationTestConfig {
     @Autowired
     ServicoJpaRepository jpa;
 
-    private Map<String, UUID> idServicos = new HashMap();
+    private final Map<String, UUID> idServicos = new HashMap<>();
 
     @BeforeEach
     void setUp() {
