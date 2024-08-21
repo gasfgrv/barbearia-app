@@ -4,7 +4,8 @@ import com.gasfgrv.barbearia.config.AbstractContainerIntegrationTestConfig;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
 import com.gasfgrv.barbearia.domain.entity.UsuarioMock;
 import com.gasfgrv.barbearia.domain.port.database.usuario.UsuarioRepositoryPort;
-import io.restassured.RestAssured;
+
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -14,12 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Map;
 
 class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig {
 
-    Usuario usuario;
+    @Autowired
+    WebApplicationContext context;
 
     @Autowired
     UsuarioRepositoryPort usuarioRepository;
@@ -27,13 +30,13 @@ class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig 
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    Usuario usuario;
+
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/v1/login";
-        usuario = UsuarioMock.montarUsuario();
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        usuarioRepository.salvarUsuario(usuario);
+        RestAssuredMockMvc.basePath = "/v1/login";
+        RestAssuredMockMvc.webAppContextSetup(context);
+        salvarUsuarioNaBaseDeDados();
     }
 
     @Test
@@ -41,17 +44,16 @@ class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig 
     void deveFazerRetornarTokenQuandoFizerLogin() {
         Map<String, String> body = Map.ofEntries(
                 Map.entry("login", usuario.getLogin()),
-                Map.entry("senha", "123456")
+                Map.entry("senha", usuario.getSenha())
         );
 
-        RestAssured
+        RestAssuredMockMvc
                 .given()
                     .log().everything()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
                     .body(body)
                 .when()
-                    .log().everything()
                     .post()
                 .then()
                     .log().everything()
@@ -67,14 +69,13 @@ class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig 
                 Map.entry("login", usuario.getLogin())
         );
 
-        RestAssured
+        RestAssuredMockMvc
                 .given()
                     .log().everything()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
                     .body(body)
                 .when()
-                    .log().everything()
                     .post("/reset")
                 .then()
                     .log().everything()
@@ -96,7 +97,7 @@ class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig 
 
         String token = getToken(tokenBody);
 
-        RestAssured
+        RestAssuredMockMvc
                 .given()
                     .log().everything()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -104,7 +105,6 @@ class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig 
                     .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token))
                     .body(body)
                 .when()
-                    .log().everything()
                     .put("/reset/nova")
                 .then()
                     .log().everything()
@@ -113,7 +113,7 @@ class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig 
     }
 
     private static String getToken(Map<String, String> tokenBody) {
-        return RestAssured
+        return RestAssuredMockMvc
                 .given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -125,6 +125,14 @@ class AutenticacaoControllerTest extends AbstractContainerIntegrationTestConfig 
                     .extract()
                     .response()
                     .jsonPath().getString("token");
+    }
+
+    private void salvarUsuarioNaBaseDeDados() {
+        usuario = UsuarioMock.montarUsuario();
+        String senhaNaoCriptografada = usuario.getSenha();
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        usuarioRepository.salvarUsuario(usuario);
+        usuario.setSenha(senhaNaoCriptografada);
     }
 
 }
