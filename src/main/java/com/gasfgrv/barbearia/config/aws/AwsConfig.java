@@ -1,6 +1,6 @@
 package com.gasfgrv.barbearia.config.aws;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -12,22 +12,16 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import java.net.URI;
 
 @Configuration
+@RequiredArgsConstructor
 public class AwsConfig {
 
-    @Value("${aws.region}")
-    private String region;
-
-    @Value("${aws.endpoint.secretsManager}")
-    private String endpointSecretsManager;
-
-    @Value("${aws.endpoint.s3}")
-    private String endpointS3;
+    private final AwsProperties awsProperties;
 
     @Bean
     public S3AsyncClient s3Client(AwsCredentialsProvider credentialsProvider) {
         return S3AsyncClient.builder()
-                .region(Region.of(region))
-                .endpointOverride(montarEndpoint(endpointS3))
+                .region(Region.of(awsProperties.getRegion()))
+                .endpointOverride(montarEndpoint(awsProperties.getEndpointS3()))
                 .credentialsProvider(credentialsProvider)
                 .build();
     }
@@ -35,8 +29,8 @@ public class AwsConfig {
     @Bean
     public SecretsManagerClient secretsManagerClient(AwsCredentialsProvider credentialsProvider) {
         return SecretsManagerClient.builder()
-                .region(Region.of(region))
-                .endpointOverride(montarEndpoint(endpointSecretsManager))
+                .region(Region.of(awsProperties.getRegion()))
+                .endpointOverride(montarEndpoint(awsProperties.getEndpointSecretsManager()))
                 .credentialsProvider(credentialsProvider)
                 .build();
     }
