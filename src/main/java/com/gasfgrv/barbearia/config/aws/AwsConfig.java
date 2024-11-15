@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 
 import java.net.URI;
@@ -24,8 +24,8 @@ public class AwsConfig {
     private String endpointS3;
 
     @Bean
-    public S3Client s3Client(AwsCredentialsProvider credentialsProvider) {
-        return S3Client.builder()
+    public S3AsyncClient s3Client(AwsCredentialsProvider credentialsProvider) {
+        return S3AsyncClient.builder()
                 .region(Region.of(region))
                 .endpointOverride(montarEndpoint(endpointS3))
                 .credentialsProvider(credentialsProvider)
