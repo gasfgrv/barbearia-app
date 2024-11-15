@@ -29,8 +29,9 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(cacheNames = "servico", key = "#servico.id"),
-            @CacheEvict(cacheNames = "servicos", allEntries = true)
+            @CacheEvict(value = "servico", key = "#servico.id"),
+            @CacheEvict(value = "servicos", allEntries = true),
+            @CacheEvict(value = "servicos-page", allEntries = true)
     })
     public Servico salvarServico(Servico servico) {
         log.info("Salvando dados do serviço {}", servico.getId());
@@ -41,8 +42,9 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(cacheNames = "servico", key = "#servico.id"),
-            @CacheEvict(cacheNames = "servicos", allEntries = true)
+            @CacheEvict(value = "servico", key = "#servico.id"),
+            @CacheEvict(value = "servicos", allEntries = true),
+            @CacheEvict(value = "servicos-page", allEntries = true)
     })
     public void desativarServico(Servico servico) {
         log.info("Desativando serviço {}", servico.getId());
@@ -51,8 +53,9 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(cacheNames = "servico", key = "#servico.id"),
-            @CacheEvict(cacheNames = "servicos", allEntries = true)
+            @CacheEvict(value = "servico", key = "#servico.id"),
+            @CacheEvict(value = "servicos", allEntries = true),
+            @CacheEvict(value = "servicos-page", allEntries = true)
     })
     public void reativarServico(Servico servico) {
         log.info("Reativando serviço {}", servico.getId());
@@ -60,7 +63,7 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
     }
 
     @Override
-    @Cacheable(cacheNames = "servico", key = "#idServico")
+    @Cacheable(value = "servico", key = "#idServico")
     public Optional<Servico> obterDadosServico(UUID idServico) {
         log.info("Adicionando os dados do serviço {} no cache", idServico);
         return repository.findById(idServico)
@@ -68,15 +71,14 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
     }
 
     @Override
-    @Cacheable(cacheNames = "servicos")
     public List<Servico> listarServicos() {
-        log.info("Adicionando a lista de serviços no cache");
         return repository.findAll().stream()
                 .map(servicoSchemaToServicoMapper::map)
                 .toList();
     }
 
     @Override
+    @Cacheable(value = "servicos", key = "#listarApenasAtivos + '-' + #pagina  + '-' + #quantidade")
     public List<Servico> listarServicos(boolean listarApenasAtivos, int pagina, int quantidade) {
         Pageable paginacao = PageRequest.of(pagina, quantidade, Sort.by("nome"));
 

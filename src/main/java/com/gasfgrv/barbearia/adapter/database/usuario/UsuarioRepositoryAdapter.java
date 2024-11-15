@@ -20,7 +20,7 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     private final Mapper<Usuario, UserDetails> mapperToUserDetails;
 
     @Override
-    @Cacheable(cacheNames = "usuario", key = "#root.method.name + '_' + #login")
+    @Cacheable(value = "usario", key = "#login")
     public Usuario findByLogin(String login) {
         log.info("Obtendo os dados do usuário na base de dados");
         return repository.findByLogin(login)
@@ -29,7 +29,7 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
-    @CacheEvict(value = "usuario")
+    @CacheEvict(value = "usario", key = "#usuario.login")
     public void salvarUsuario(Usuario usuario) {
         log.info("Salvando os dados do usuário na base de dados");
         UserDetails userDetails = mapperToUserDetails.map(usuario);
