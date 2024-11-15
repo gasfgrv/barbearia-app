@@ -33,7 +33,7 @@ public class EmailAdapter implements EmailPort {
 
             MimeMessage mimeMessage = montarMensagem(mailSender, dadosEmail);
             mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Erro ao enviar email {}", e.getMessage(), e);
             throw new EnvioEmailException(e);
         }
