@@ -12,7 +12,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig {
 
-    @Bean(name = "emailExecutor")
+    @Bean(name = "emailExecutor", destroyMethod = "shutdown")
     public Executor threadPoolExecutor() {
         ThreadPoolTaskExecutor threadPoolExecutor = new ThreadPoolTaskExecutorBuilder()
                 .corePoolSize(1)
