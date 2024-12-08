@@ -5,62 +5,71 @@ import com.gasfgrv.barbearia.adapter.exception.email.EnvioEmailException;
 import com.gasfgrv.barbearia.adapter.exception.secret.ChaveSecretNaoEncontradaExeption;
 import com.gasfgrv.barbearia.adapter.exception.secret.ErroAoProcessarValorSecretExeption;
 import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
+import com.gasfgrv.barbearia.application.exception.pessoa.IdadeInvalidaException;
+import com.gasfgrv.barbearia.application.exception.pessoa.PessoaExistenteException;
 import com.gasfgrv.barbearia.application.exception.servico.SemDadosParaAlterarException;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoAtivoExeception;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoDesativadoExeception;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoExistenteExeception;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoNaoEncontradoException;
-import com.gasfgrv.barbearia.application.exception.token.TokenException;
 import com.gasfgrv.barbearia.application.exception.usuario.UsuarioNaoEncontradoException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.mediatype.problem.Problem;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Function;
 
-@RestControllerAdvice // todo: melhorar o código do handler e adicinar IdadeInvalidaException e PessoaExistenteException
-public class ControllerAdvice extends ResponseEntityExceptionHandler implements AccessDeniedHandler {
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
-    @ExceptionHandler(TokenException.class)
-    @ApiResponse(responseCode = "403", content = {
+@RestControllerAdvice
+@RequiredArgsConstructor
+public class ControllerAdvice implements AccessDeniedHandler {
+
+    private final ObjectMapper mapper;
+
+    @ExceptionHandler(IdadeInvalidaException.class)
+    @ApiResponse(responseCode = "422", content = {
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
-    public ResponseEntity<Object> handleTokenException(TokenException exception, WebRequest request) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+    public ResponseEntity<Object> handleIdadeInvalidaException(IdadeInvalidaException exception, WebRequest request) {
+        return handleErrorResponse(UNPROCESSABLE_ENTITY, "Erro ao cadastrar cliente", exception.getMessage(), request);
+    }
 
-        Problem problem = Problem.create()
-                .withTitle("Token expirado")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+    @ExceptionHandler(PessoaExistenteException.class)
+    @ApiResponse(responseCode = "422", content = {
+            @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
+    })
+    public ResponseEntity<Object> handlePessoaExistenteException(PessoaExistenteException exception, WebRequest request) {
+        return handleErrorResponse(UNPROCESSABLE_ENTITY, "Erro ao cadastrar cliente", exception.getMessage(), request);
     }
 
     @ExceptionHandler(SemDadosParaAlterarException.class)
@@ -68,17 +77,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleSemDadosParaAlterarException(SemDadosParaAlterarException exception, WebRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao alterar o serviço")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(BAD_REQUEST, "Erro ao alterar o serviço", exception.getMessage(), request);
     }
 
     @ExceptionHandler(ServicoAtivoExeception.class)
@@ -86,17 +85,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleServicoAtivoExeception(ServicoAtivoExeception exception, WebRequest request) {
-        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao ativar o serviço")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(UNPROCESSABLE_ENTITY, "Erro ao ativar o serviço", exception.getMessage(), request);
     }
 
     @ExceptionHandler(ServicoDesativadoExeception.class)
@@ -104,17 +93,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleServicoDesativadoExeception(ServicoDesativadoExeception exception, WebRequest request) {
-        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao desativar o serviço")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(UNPROCESSABLE_ENTITY, "Erro ao desativar o serviço", exception.getMessage(), request);
     }
 
     @ExceptionHandler(ServicoExistenteExeception.class)
@@ -122,17 +101,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleServicoExistenteExeception(ServicoExistenteExeception exception, WebRequest request) {
-        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao salvar o serviço")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(UNPROCESSABLE_ENTITY, "Erro ao salvar o serviço", exception.getMessage(), request);
     }
 
     @ExceptionHandler(ServicoNaoEncontradoException.class)
@@ -140,17 +109,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleServicoNaoEncontradoException(ServicoNaoEncontradoException exception, WebRequest request) {
-        HttpStatus status = HttpStatus.NOT_FOUND;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao consultar o serviço")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(NOT_FOUND, "Erro ao consultar o serviço", exception.getMessage(), request);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -158,17 +117,10 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception, WebRequest request) {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao autenticar usuário")
-                .withDetail("Confira se as suas credenciais estão corretas")
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(UNAUTHORIZED,
+                "Erro ao autenticar usuário",
+                "Confira se as suas credenciais estão corretas",
+                request);
     }
 
     @ExceptionHandler(ChaveSecretNaoEncontradaExeption.class)
@@ -176,17 +128,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleChaveSecretNaoEncontradaExeption(ChaveSecretNaoEncontradaExeption exception, WebRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao consultar chave")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(BAD_REQUEST, "Erro ao consultar chave", exception.getMessage(), request);
     }
 
     @ExceptionHandler(ErroAoProcessarValorSecretExeption.class)
@@ -194,17 +136,10 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleErroAoProcessarValorSecretExeption(ErroAoProcessarValorSecretExeption exception, WebRequest request) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro inesperado ao consultar valor do segredo")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(INTERNAL_SERVER_ERROR,
+                "Erro inesperado ao consultar valor do segredo",
+                exception.getMessage(),
+                request);
     }
 
     @ExceptionHandler(UsuarioNaoEncontradoException.class)
@@ -212,17 +147,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleUsuarioNaoEncontradoException(UsuarioNaoEncontradoException exception, WebRequest request) {
-        HttpStatus status = HttpStatus.NOT_FOUND;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao consultar chave")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(NOT_FOUND, "Erro ao consultar chave", exception.getMessage(), request);
     }
 
     @ExceptionHandler(ResetTokenInvalidoException.class)
@@ -230,17 +155,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleResetTokenInvalidoException(ResetTokenInvalidoException exception, WebRequest request) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao alterar a senha")
-                .withDetail(exception.getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(FORBIDDEN, "Erro ao alterar a senha", exception.getMessage(), request);
     }
 
     @ExceptionHandler(EnvioEmailException.class)
@@ -248,43 +163,27 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public ResponseEntity<Object> handleEnvioEmailException(EnvioEmailException exception, WebRequest request) {
-        HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
-        HttpHeaders headers = new HttpHeaders();
-        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
-
-        Problem problem = Problem.create()
-                .withTitle("Erro ao enviar e-mail")
-                .withDetail(exception.getCause().getMessage())
-                .withStatus(status)
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, headers, status, request);
+        return handleErrorResponse(SERVICE_UNAVAILABLE,
+                "Erro ao enviar e-mail",
+                exception.getCause().getMessage(),
+                request);
     }
 
-    @Override
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ApiResponse(responseCode = "400", content = {
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException exception, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.addAll(headers);
-        httpHeaders.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, WebRequest request) {
+        String listBoundariesRegex = "[\\[\\]]";
+        String erros = exception.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(getFieldsWithError())
+                .toList()
+                .toString()
+                .replaceAll(listBoundariesRegex, "");
 
-        List<String> erros = exception.getBindingResult().getAllErrors()
-                .stream().map(erro -> {
-                    String campo = ((FieldError) erro).getField();
-                    String mensagem = erro.getDefaultMessage();
-                    return String.format("'%s' %s", campo, mensagem);
-                })
-                .toList();
-
-        Problem problem = Problem.create()
-                .withTitle("Erro no valor dos parâmetros")
-                .withDetail(erros.toString().replaceAll("[\\[\\]]", ""))
-                .withStatus(HttpStatus.valueOf(status.value()))
-                .withInstance(obterUri(request));
-
-        return handleExceptionInternal(exception, problem, httpHeaders, status, request);
+        return handleErrorResponse(BAD_REQUEST, "Erro no valor dos parâmetros", erros, request);
     }
 
     @Override
@@ -292,24 +191,44 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
             @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
     })
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException {
-        int status = HttpStatus.FORBIDDEN.value();
+        ResponseEntity<Object> respostaErro = handleErrorResponse(FORBIDDEN,
+                "Acesso proibido",
+                "Você não tem a permissão necessária para acessar esse recurso",
+                new ServletWebRequest(request));
 
-        response.setStatus(status);
-        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+        response.setStatus(respostaErro.getStatusCode().value());
+        response.setContentType(APPLICATION_PROBLEM_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("title", "Acesso proibido");
-        responseBody.put("detail", "Você não tem a permissão necessária para acessar esse recurso");
-        responseBody.put("status", status);
-        responseBody.put("instance", obterUri(new ServletWebRequest(request)));
-
-        String json = new ObjectMapper().writeValueAsString(responseBody);
+        String json = mapper.writeValueAsString(respostaErro.getBody());
 
         try (PrintWriter responseWriter = response.getWriter()) {
             responseWriter.write(json);
             responseWriter.flush();
         }
+    }
+
+    private Function<ObjectError, String> getFieldsWithError() {
+        return erro -> {
+            String campo = ((FieldError) erro).getField();
+            String mensagem = erro.getDefaultMessage();
+            return String.format("'%s' %s", campo, mensagem);
+        };
+    }
+
+    private ResponseEntity<Object> handleErrorResponse(HttpStatus status, String title, String detail, WebRequest request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.put(CONTENT_TYPE, List.of(APPLICATION_PROBLEM_JSON_VALUE));
+
+        Problem problem = Problem.create()
+                .withTitle(title)
+                .withDetail(detail)
+                .withStatus(status)
+                .withInstance(obterUri(request));
+
+        return ResponseEntity.status(status)
+                .headers(headers)
+                .body(problem);
     }
 
     private URI obterUri(WebRequest request) {
