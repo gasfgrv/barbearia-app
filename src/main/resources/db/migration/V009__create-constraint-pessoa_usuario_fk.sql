@@ -1,0 +1,1 @@
+ALTER TABLE public.pessoa ADD CONSTRAINT pessoa_usuario_fk FOREIGN KEY (usuario_login) REFERENCES public.usuario(login);

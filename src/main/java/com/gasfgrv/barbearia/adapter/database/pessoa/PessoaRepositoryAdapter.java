@@ -22,7 +22,8 @@ public class PessoaRepositoryAdapter implements PessoaRepositoryPort {
     @Override
     @Caching(evict = {
             @CacheEvict(cacheNames = "pessoa", key = "#pessoa.id"),
-            @CacheEvict(cacheNames = "pessoas", allEntries = true)
+            @CacheEvict(cacheNames = "pessoas", allEntries = true),
+            @CacheEvict(cacheNames = "existeCpfSalvo", key = "#pessoa.cpf")
     })
     public Pessoa salvarPessa(Pessoa pessoa) {
         PessoaSchema schema = pessoaToPessoaSchemaMapper.map(pessoa);

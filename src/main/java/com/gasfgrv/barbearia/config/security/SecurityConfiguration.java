@@ -38,6 +38,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorization ->
                         authorization.requestMatchers(POST, "/v1/login").permitAll()
                                 .requestMatchers(POST, "/v1/login/reset").permitAll()
+                                .requestMatchers(POST, "/v1/pessoas/cliente").permitAll()
+                                .requestMatchers(POST, "/v1/pessoas/barbeiro").hasAuthority(BARBEIRO.getAuthority())
                                 .requestMatchers(PUT, "/v1/servicos/**").hasAuthority(BARBEIRO.getAuthority())
                                 .requestMatchers(POST, "/v1/servicos").hasAuthority(BARBEIRO.getAuthority())
                                 .requestMatchers(GET, "/v1/servicos/**").authenticated()

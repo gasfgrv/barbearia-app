@@ -37,6 +37,7 @@ public class UsuarioService implements UserDetailsService {
             return mapper.map(getUsuario(login));
         } catch (Exception e) {
             log.error("Erro ao consultar: {}", e.getMessage());
+            e.printStackTrace();
             throw new UsernameNotFoundException("Erro ao procurar usuário");
         }
     }

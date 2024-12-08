@@ -1,19 +1,18 @@
 package com.gasfgrv.barbearia.adapter.database.usuario;
 
-import java.util.Collection;
-import java.util.Set;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.gasfgrv.barbearia.adapter.database.perfil.PerfilSchema;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Set;
 
 @Data
 @Entity
@@ -25,7 +24,7 @@ public class UsuarioSchema implements UserDetails {
 
     private String senha;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "perfil_id", referencedColumnName = "id")
     private PerfilSchema perfil;
 

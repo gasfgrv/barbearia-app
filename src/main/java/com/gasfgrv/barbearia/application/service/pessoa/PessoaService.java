@@ -1,5 +1,7 @@
 package com.gasfgrv.barbearia.application.service.pessoa;
 
+import com.gasfgrv.barbearia.application.exception.pessoa.IdadeInvalidaException;
+import com.gasfgrv.barbearia.application.exception.pessoa.PessoaExistenteException;
 import com.gasfgrv.barbearia.domain.entity.Arquivo;
 import com.gasfgrv.barbearia.domain.entity.Pessoa;
 import com.gasfgrv.barbearia.domain.port.bucket.BucketPort;
@@ -8,7 +10,6 @@ import com.gasfgrv.barbearia.domain.port.database.usuario.UsuarioRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -30,23 +31,30 @@ public class PessoaService {
 
         if (pessoaExiste) {
             log.error("CPF já salvo");
-            throw new RuntimeException("PessoaExistenteException");
+            throw new PessoaExistenteException();
         }
 
-        long idadePessoa = ChronoUnit.YEARS.between(pessoa.getDataNascimento(), LocalDate.now(clock));
+        long idadePessoa = ChronoUnit.YEARS
+                .between(pessoa.getDataNascimento(), LocalDate.now(clock));
 
         if (idadePessoa < 18) {
             log.error("Idade inválida para cadastro");
-            throw new RuntimeException("IdadeInvalidaException");
+            throw new IdadeInvalidaException();
         }
 
         usuarioRepository.salvarUsuario(pessoa.getUsuario());
 
+        pessoa.setAtivo(true);
+
         UUID randomUUID = UUID.randomUUID();
         pessoa.setId(randomUUID);
-        arquivo.setIdImagem(randomUUID);
 
-        bucket.salvar(arquivo);
+        if (arquivo != null) {
+            arquivo.setIdImagem(randomUUID);
+            bucket.salvar(arquivo);
+            pessoa.setImagem(arquivo);
+        }
+
         return pessoaRepository.salvarPessa(pessoa);
     }
 

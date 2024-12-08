@@ -2,8 +2,10 @@ package com.gasfgrv.barbearia.adapter.token;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
+import com.gasfgrv.barbearia.application.exception.token.TokenException;
 import com.gasfgrv.barbearia.domain.port.database.reset.PasswordResetTokenRepositoryPort;
 import com.gasfgrv.barbearia.domain.port.secret.SecretPort;
 import lombok.RequiredArgsConstructor;
@@ -43,12 +45,16 @@ public class TokenService {
     }
 
     public String getSubject(String token) {
-        log.info("Obtendo subject do token: {}", token);
-        return JWT.require(obterAlgoritmo())
-                .withIssuer("barbearia")
-                .build()
-                .verify(token)
-                .getSubject();
+        try {
+            log.info("Obtendo subject do token: {}", token);
+            return JWT.require(obterAlgoritmo())
+                    .withIssuer("barbearia")
+                    .build()
+                    .verify(token)
+                    .getSubject();
+        } catch (JWTVerificationException e) {
+            throw new TokenException(e);
+        }
     }
 
     public String criarResetToken(DadosToken dadosToken) {

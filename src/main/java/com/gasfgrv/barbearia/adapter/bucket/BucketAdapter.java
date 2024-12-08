@@ -22,7 +22,7 @@ public class BucketAdapter implements BucketPort {
     public void salvar(Arquivo arquivo) {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(BUCKET_NAME)
-                .key(arquivo.getNome())
+                .key(arquivo.getIdImagem().toString().concat("_").concat(arquivo.getNome()))
                 .build();
         AsyncRequestBody requestBody = AsyncRequestBody.fromBytes(arquivo.getBytes());
         s3Client.putObject(putObjectRequest, requestBody)

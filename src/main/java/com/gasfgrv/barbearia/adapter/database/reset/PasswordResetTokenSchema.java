@@ -2,6 +2,7 @@ package com.gasfgrv.barbearia.adapter.database.reset;
 
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,7 +24,7 @@ public class PasswordResetTokenSchema {
 
     private String token;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_login", referencedColumnName = "login")
     private UsuarioSchema usuarioLogin;
 

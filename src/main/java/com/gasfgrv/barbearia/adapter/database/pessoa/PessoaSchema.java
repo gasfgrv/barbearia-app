@@ -1,9 +1,9 @@
 package com.gasfgrv.barbearia.adapter.database.pessoa;
 
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
-import com.gasfgrv.barbearia.domain.entity.Usuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -26,7 +26,7 @@ public class PessoaSchema {
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_login", referencedColumnName = "login")
     private UsuarioSchema usuario;
     private String celular;

@@ -10,6 +10,7 @@ import com.gasfgrv.barbearia.application.exception.servico.ServicoAtivoExeceptio
 import com.gasfgrv.barbearia.application.exception.servico.ServicoDesativadoExeception;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoExistenteExeception;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoNaoEncontradoException;
+import com.gasfgrv.barbearia.application.exception.token.TokenException;
 import com.gasfgrv.barbearia.application.exception.usuario.UsuarioNaoEncontradoException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,8 +42,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestControllerAdvice
+@RestControllerAdvice // todo: melhorar o código do handler e adicinar IdadeInvalidaException e PessoaExistenteException
 public class ControllerAdvice extends ResponseEntityExceptionHandler implements AccessDeniedHandler {
+
+    @ExceptionHandler(TokenException.class)
+    @ApiResponse(responseCode = "403", content = {
+            @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
+    })
+    public ResponseEntity<Object> handleTokenException(TokenException exception, WebRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        HttpHeaders headers = new HttpHeaders();
+        headers.put(HttpHeaders.CONTENT_TYPE, List.of(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+
+        Problem problem = Problem.create()
+                .withTitle("Token expirado")
+                .withDetail(exception.getMessage())
+                .withStatus(status)
+                .withInstance(obterUri(request));
+
+        return handleExceptionInternal(exception, problem, headers, status, request);
+    }
 
     @ExceptionHandler(SemDadosParaAlterarException.class)
     @ApiResponse(responseCode = "400", content = {
