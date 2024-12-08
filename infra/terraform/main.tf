@@ -5,6 +5,12 @@ terraform {
       version = "5.50.0"
     }
   }
+
+  backend "s3" {
+    bucket = "gasfgrv-terraform-remote-state"
+    key = "barbearia-app/terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 provider "aws" {
