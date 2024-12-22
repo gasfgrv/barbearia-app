@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket = "gasfgrv-terraform-remote-state"
-    key = "barbearia-app/terraform.tfstate"
+    key    = "barbearia-app/terraform.tfstate"
     region = "us-east-1"
   }
 }
