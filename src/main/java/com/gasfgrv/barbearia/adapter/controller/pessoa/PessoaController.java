@@ -18,7 +18,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 import static com.gasfgrv.barbearia.adapter.utils.RequestUtils.logRequisicaoRecebida;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
@@ -32,7 +31,7 @@ public class PessoaController {
     private final Mapper<MultipartFile, Arquivo> multipartFileToArquivoMapper;
 
     @Transactional
-    @PostMapping(value = "/cliente", consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/cliente", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ClienteResponse> cadastrarCliente(@RequestPart("json") CadastroClienteForm form,
                                                             @RequestPart(value = "file", required = false) MultipartFile file,
                                                             HttpServletRequest request) {
