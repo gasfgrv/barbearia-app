@@ -27,7 +27,9 @@ public class PessoaController {
 
     private final PessoaService pessoaService;
     private final Mapper<CadastroClienteForm, Pessoa> cadastroClienteFormToPessoaMapper;
+    private final Mapper<CadastroBarbeiroForm, Pessoa> cadastroBarbeiroFormToPessoaMapper;
     private final Mapper<Pessoa, ClienteResponse> pessoaToClienteResponseMapper;
+    private final Mapper<Pessoa, BarbeiroResponse> pessoaToBarbeiroResponseMapper;
     private final Mapper<MultipartFile, Arquivo> multipartFileToArquivoMapper;
 
     @Transactional
@@ -38,19 +40,37 @@ public class PessoaController {
         logRequisicaoRecebida(request);
 
         Pessoa pessoa = cadastroClienteFormToPessoaMapper.map(form);
-        Arquivo arquivo = file != null
-                ? multipartFileToArquivoMapper.map(file)
-                : null;
+        Pessoa cliente = pessoaService.inserirDadosPessoa(pessoa, montarArquivo(file));
 
-        Pessoa cliente = pessoaService.inserirDadosPessoa(pessoa, arquivo);
+        return ResponseEntity.created(montarLocationHeader(cliente))
+                .body(pessoaToClienteResponseMapper.map(cliente));
+    }
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .pathSegment(cliente.getId().toString())
+    @Transactional
+    @PostMapping(value = "/barbeiro", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BarbeiroResponse> cadastrarBarbeiro(@RequestPart("json") CadastroBarbeiroForm form,
+                                                              @RequestPart(value = "file", required = false) MultipartFile file,
+                                                              HttpServletRequest request) {
+        logRequisicaoRecebida(request);
+
+        Pessoa pessoa = cadastroBarbeiroFormToPessoaMapper.map(form);
+        Pessoa barbeiro = pessoaService.inserirDadosPessoa(pessoa, montarArquivo(file));
+
+        return ResponseEntity.created(montarLocationHeader(barbeiro))
+                .body(pessoaToBarbeiroResponseMapper.map(barbeiro));
+    }
+
+    private static URI montarLocationHeader(Pessoa pessoa) {
+        return ServletUriComponentsBuilder.fromCurrentRequest()
+                .pathSegment(pessoa.getId().toString())
                 .build()
                 .toUri();
+    }
 
-        return ResponseEntity.created(location)
-                .body(pessoaToClienteResponseMapper.map(cliente));
+    private Arquivo montarArquivo(MultipartFile file) {
+        return file != null
+                ? multipartFileToArquivoMapper.map(file)
+                : null;
     }
 
 }

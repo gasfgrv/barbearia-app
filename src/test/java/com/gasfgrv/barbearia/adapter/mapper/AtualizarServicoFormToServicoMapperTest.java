@@ -1,6 +1,7 @@
 package com.gasfgrv.barbearia.adapter.mapper;
 
 import com.gasfgrv.barbearia.adapter.controller.servico.AtualizarServicoForm;
+import com.gasfgrv.barbearia.adapter.mapper.servico.AtualizarServicoFormToServicoMapper;
 import com.gasfgrv.barbearia.config.mapper.ModelMapperConfig;
 import com.gasfgrv.barbearia.domain.entity.Servico;
 import com.gasfgrv.barbearia.domain.entity.ServicoMock;

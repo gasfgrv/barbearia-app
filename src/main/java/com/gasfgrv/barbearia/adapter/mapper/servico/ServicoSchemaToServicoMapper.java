@@ -1,6 +1,6 @@
-package com.gasfgrv.barbearia.adapter.mapper;
+package com.gasfgrv.barbearia.adapter.mapper.servico;
 
-import com.gasfgrv.barbearia.adapter.controller.servico.AtualizarServicoForm;
+import com.gasfgrv.barbearia.adapter.database.servico.ServicoSchema;
 import com.gasfgrv.barbearia.domain.entity.Servico;
 import com.gasfgrv.barbearia.domain.port.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AtualizarServicoFormToServicoMapper implements Mapper<AtualizarServicoForm, Servico> {
+public class ServicoSchemaToServicoMapper implements Mapper<ServicoSchema, Servico> {
 
     private final ModelMapper mapper;
 
     @Override
-    public Servico map(AtualizarServicoForm input) {
+    public Servico map(ServicoSchema input) {
         return mapper.map(input, Servico.class);
     }
 

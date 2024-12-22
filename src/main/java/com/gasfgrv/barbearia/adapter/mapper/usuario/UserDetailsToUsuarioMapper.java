@@ -1,4 +1,4 @@
-package com.gasfgrv.barbearia.adapter.mapper;
+package com.gasfgrv.barbearia.adapter.mapper.usuario;
 
 import com.gasfgrv.barbearia.domain.entity.Usuario;
 import com.gasfgrv.barbearia.domain.port.mapper.Mapper;

@@ -1,4 +1,4 @@
-package com.gasfgrv.barbearia.adapter.mapper;
+package com.gasfgrv.barbearia.adapter.mapper.servico;
 
 import com.gasfgrv.barbearia.adapter.database.servico.ServicoSchema;
 import com.gasfgrv.barbearia.domain.entity.Servico;

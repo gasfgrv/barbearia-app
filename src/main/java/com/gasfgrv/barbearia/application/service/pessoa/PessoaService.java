@@ -2,6 +2,7 @@ package com.gasfgrv.barbearia.application.service.pessoa;
 
 import com.gasfgrv.barbearia.application.exception.pessoa.IdadeInvalidaException;
 import com.gasfgrv.barbearia.application.exception.pessoa.PessoaExistenteException;
+import com.gasfgrv.barbearia.application.service.usuario.UsuarioService;
 import com.gasfgrv.barbearia.domain.entity.Arquivo;
 import com.gasfgrv.barbearia.domain.entity.Pessoa;
 import com.gasfgrv.barbearia.domain.port.bucket.BucketPort;
@@ -23,7 +24,7 @@ public class PessoaService {
 
     private final Clock clock;
     private final PessoaRepositoryPort pessoaRepository;
-    private final UsuarioRepositoryPort usuarioRepository;
+    private final UsuarioService usuarioService;
     private final BucketPort bucket;
 
     public Pessoa inserirDadosPessoa(Pessoa pessoa, Arquivo arquivo) {
@@ -42,7 +43,7 @@ public class PessoaService {
             throw new IdadeInvalidaException();
         }
 
-        usuarioRepository.salvarUsuario(pessoa.getUsuario());
+        usuarioService.salvarUsuario(pessoa.getUsuario());
 
         pessoa.setAtivo(true);
 

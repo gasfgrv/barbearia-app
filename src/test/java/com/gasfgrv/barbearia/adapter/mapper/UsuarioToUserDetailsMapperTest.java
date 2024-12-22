@@ -1,6 +1,7 @@
 package com.gasfgrv.barbearia.adapter.mapper;
 
 import com.gasfgrv.barbearia.adapter.database.usuario.UsuarioSchema;
+import com.gasfgrv.barbearia.adapter.mapper.usuario.UsuarioToUserDetailsMapper;
 import com.gasfgrv.barbearia.config.mapper.ModelMapperConfig;
 import com.gasfgrv.barbearia.domain.entity.Usuario;
 import com.gasfgrv.barbearia.domain.entity.UsuarioMock;

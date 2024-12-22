@@ -1,6 +1,7 @@
 package com.gasfgrv.barbearia.adapter.mapper;
 
 import com.gasfgrv.barbearia.adapter.database.perfil.PerfilSchemaMock;
+import com.gasfgrv.barbearia.adapter.mapper.perfil.GrantedAuthorityToPerfil;
 import com.gasfgrv.barbearia.config.mapper.ModelMapperConfig;
 import com.gasfgrv.barbearia.domain.entity.Perfil;
 import com.gasfgrv.barbearia.domain.port.mapper.Mapper;

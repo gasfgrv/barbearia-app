@@ -67,4 +67,10 @@ public class UsuarioService implements UserDetailsService {
         return Optional.ofNullable(usuarioRepository.findByLogin(login))
                 .orElseThrow(UsuarioNaoEncontradoException::new);
     }
+
+    public void salvarUsuario(Usuario usuario) {
+        log.info("Salvando dados do usuario: {}", usuario.getLogin());
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        usuarioRepository.salvarUsuario(usuario);
+    }
 }
