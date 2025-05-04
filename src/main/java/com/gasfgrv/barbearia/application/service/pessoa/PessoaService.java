@@ -7,7 +7,6 @@ import com.gasfgrv.barbearia.domain.entity.Arquivo;
 import com.gasfgrv.barbearia.domain.entity.Pessoa;
 import com.gasfgrv.barbearia.domain.port.bucket.BucketPort;
 import com.gasfgrv.barbearia.domain.port.database.pessoa.PessoaRepositoryPort;
-import com.gasfgrv.barbearia.domain.port.database.usuario.UsuarioRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -59,4 +58,24 @@ public class PessoaService {
         return pessoaRepository.salvarPessa(pessoa);
     }
 
+    public Pessoa obterDadosPessoa(UUID idPessoa) {
+        return pessoaRepository.buscarPessoa(idPessoa);
+    }
+
+    public Pessoa atualizarDadosPessoa(UUID idPessoa, Pessoa pessoa) {
+        Pessoa dadosSalvos = pessoaRepository.buscarPessoa(idPessoa);
+        dadosSalvos.setNome(pessoa.getNome());
+        dadosSalvos.setCelular(pessoa.getCelular());
+        return pessoaRepository.salvarPessa(dadosSalvos);
+    }
+
+    public void desativarPessoa(UUID idPessoa) {
+        Pessoa dadosSalvos = pessoaRepository.buscarPessoa(idPessoa);
+        dadosSalvos.setAtivo(false);
+        pessoaRepository.salvarPessa(dadosSalvos);
+    }
+
+    public void removerPessoa(UUID idPessoa) {
+        pessoaRepository.removerPessoa(idPessoa);
+    }
 }

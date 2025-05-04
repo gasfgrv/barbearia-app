@@ -1,19 +1,17 @@
 package com.gasfgrv.barbearia.adapter.database.pessoa;
 
-import com.gasfgrv.barbearia.adapter.database.servico.ServicoSchema;
-import com.gasfgrv.barbearia.domain.entity.Pessoa;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PessoaJpaRepository extends JpaRepository<PessoaSchema, UUID> {
 
-    List<ServicoSchema> findByAtivoTrue();
-
-    Page<ServicoSchema> findByAtivoTrue(Pageable pageable);
-
     boolean existsByCpf(String cpf);
+
+    @Query("select p from PessoaSchema p join fetch p.usuario u where p.id=:id and p.ativo=true")
+    Optional<PessoaSchema> buscarPessoaPorId(@Param("id") UUID id);
+
 }

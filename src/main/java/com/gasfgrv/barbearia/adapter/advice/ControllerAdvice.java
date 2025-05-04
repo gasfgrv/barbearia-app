@@ -7,6 +7,7 @@ import com.gasfgrv.barbearia.adapter.exception.secret.ErroAoProcessarValorSecret
 import com.gasfgrv.barbearia.adapter.exception.token.ResetTokenInvalidoException;
 import com.gasfgrv.barbearia.application.exception.pessoa.IdadeInvalidaException;
 import com.gasfgrv.barbearia.application.exception.pessoa.PessoaExistenteException;
+import com.gasfgrv.barbearia.application.exception.pessoa.PessoaNaoEncontradaException;
 import com.gasfgrv.barbearia.application.exception.servico.SemDadosParaAlterarException;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoAtivoExeception;
 import com.gasfgrv.barbearia.application.exception.servico.ServicoDesativadoExeception;
@@ -55,6 +56,14 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 public class ControllerAdvice implements AccessDeniedHandler {
 
     private final ObjectMapper mapper;
+
+    @ExceptionHandler(PessoaNaoEncontradaException.class)
+    @ApiResponse(responseCode = "404", content = {
+            @Content(mediaType = "application/problem+json", schema = @Schema(implementation = Problem.class))
+    })
+    public ResponseEntity<Object> handlePessoaNaoEncontradaException(PessoaNaoEncontradaException exception, WebRequest request) {
+        return handleErrorResponse(NOT_FOUND, "Erro ao consultar dados", exception.getMessage(), request);
+    }
 
     @ExceptionHandler(IdadeInvalidaException.class)
     @ApiResponse(responseCode = "422", content = {
